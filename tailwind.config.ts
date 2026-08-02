@@ -10,20 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#8B5CF6", // Ungu
-          dark: "#7C3AED",
-        },
-        secondary: {
-          DEFAULT: "#06B6D4", // Cyan
-          dark: "#0891b2",
-        },
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: { DEFAULT: "#8B5CF6", dark: "#7C3AED" },
+        secondary: { DEFAULT: "#06B6D4", dark: "#0891B2" },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
       },
     },
   },
+  plugins: [],
 };
+export default config;

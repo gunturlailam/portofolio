@@ -6,7 +6,7 @@ import { Layers, RotateCcw, ArrowRight, SearchX } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
 import ProjectCard, { type Projek } from "./ProjectCard";
 
-const FALLBACK: Projek[] = [
+export const FALLBACK: Projek[] = [
   {
     id: "f1",
     judul: "TaskFlow PHP Native",

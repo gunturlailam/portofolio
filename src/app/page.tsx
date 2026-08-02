@@ -4,6 +4,7 @@ import About from "@/components/About";
 import Skills from "@/components/Skills";
 import ProjectGrid from "@/components/ProjectGrid";
 import Timeline from "@/components/Timeline";
+import CertificateGrid from "@/components/CertificateGrid";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Skills />
       <ProjectGrid />
       <Timeline />
+      <CertificateGrid />
     </main>
   );
 }

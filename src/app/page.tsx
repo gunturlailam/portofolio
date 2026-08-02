@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Skills from "@/components/Skills";
+import ProjectGrid from "@/components/ProjectGrid";
 import Timeline from "@/components/Timeline";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <About />
       <Skills />
+      <ProjectGrid />
       <Timeline />
     </main>
   );

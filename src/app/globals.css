@@ -16,3 +16,20 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #8b5cf680;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}

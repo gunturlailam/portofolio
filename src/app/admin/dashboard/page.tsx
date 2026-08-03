@@ -283,17 +283,14 @@ function ProjekForm({
       </p>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Kategori">
-          <input
-            list="katlist"
+          <select
             className={inputCls}
             value={f.kategori}
             onChange={(e) => set("kategori", e.target.value)}
-          />
-          <datalist id="katlist">
-            <option value="Web" />
-            <option value="Mobile" />
-            <option value="Design" />
-          </datalist>
+          >
+            <option value="Web">Web</option>
+            <option value="Mobile">Mobile</option>
+          </select>
         </Field>
         <Field label="Tanggal Selesai">
           <input

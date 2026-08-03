@@ -1,9 +1,22 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Bersihkan kutip pembungkus, spasi nyasar, dan BOM yang nyelip di nilai.
+const raw = (v: string | undefined) =>
+  (v ?? "")
+    .replace(/\uFEFF/g, "")
+    .trim()
+    .replace(/^["'`]+|["'`]+$/g, "");
 
-// Env "siap" hanya kalau terisi & bukan placeholder template.
+const url = raw(process.env.NEXT_PUBLIC_SUPABASE_URL);
+// Supabase baru menamai "anon key" sebagai "publishable key" — terima keduanya.
+const key = raw(
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+);
+
+export const supabaseUrl = url;
+export const supabaseKey = key;
+
 export const envReady =
   !!url &&
   !!key &&
@@ -11,8 +24,13 @@ export const envReady =
   key.length > 10 &&
   !key.includes("your_");
 
+// Diagnostik: biar halaman login bisa ngaku apa yang dia lihat.
+export const envDebug = {
+  url: url ? url.slice(0, 14) + "…" : null,
+  keyLen: key ? key.length : 0,
+};
+
 // Client tiruan: dipakai SAAT env belum diisi supaya aplikasi TIDAK crash.
-// Rantai query (.from().select().range()...) dikembalikan kosong → komponen jatuh ke fallback.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const emptyChain: any = new Proxy(function () {}, {
   get(_target, prop) {
@@ -34,7 +52,7 @@ const emptyChain: any = new Proxy(function () {}, {
 });
 
 export const supabase: SupabaseClient = envReady
-  ? createClient(url as string, key as string, {
+  ? createClient(url, key, {
       auth: { persistSession: true, autoRefreshToken: true },
     })
   : (emptyChain as unknown as SupabaseClient);

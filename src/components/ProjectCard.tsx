@@ -87,7 +87,12 @@ export default function ProjectCard({
       transition={{
         duration: 0.5,
         delay: (index % 3) * 0.08,
-        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [
+          number,
+          number,
+          number,
+          number,
+        ],
       }}
       whileHover={{ y: -6 }}
       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-gray-200/70 bg-white/70 shadow-sm backdrop-blur transition-all duration-300 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03] ${c.border} ${c.glow}`}

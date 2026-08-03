@@ -66,7 +66,12 @@ const fadeUp = {
     transition: {
       delay: i * 0.08,
       duration: 0.5,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [
+        number,
+        number,
+        number,
+        number,
+      ],
     },
   }),
 };
@@ -175,7 +180,12 @@ export default function About() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{
               duration: 0.6,
-              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+              ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [
+                number,
+                number,
+                number,
+                number,
+              ],
             }}
           >
             <div className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white/70 p-7 shadow-sm backdrop-blur transition-shadow duration-500 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03]">

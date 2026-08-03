@@ -209,7 +209,7 @@ export default function CertificateGrid({
                       number,
                       number,
                       number,
-                    ],
+                    ] as [number, number, number, number],
                   }}
                   className="group relative rounded-2xl border border-gray-200/80 bg-white/80 p-4 shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.04]"
                 >

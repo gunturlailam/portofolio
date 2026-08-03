@@ -206,7 +206,12 @@ export default function ProjekDetailPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{
                 duration: 0.7,
-                ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+                ease: [0.22, 1, 0.36, 1] as [
+                  number,
+                  number,
+                  number,
+                  number,
+                ] as [number, number, number, number],
               }}
               className="group relative mb-14 overflow-hidden rounded-3xl border border-gray-200/70 shadow-xl dark:border-white/10"
             >

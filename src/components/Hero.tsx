@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Download, ArrowRight, Code2, Palette } from "lucide-react";
 import SocialIcons from "./SocialIcons";
+import Link from "next/link";
 
 const stats = [
   { value: "2+", label: "Tahun Belajar" },
@@ -84,14 +85,14 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8 flex flex-wrap items-center gap-4"
           >
-            <a
-              href="/assets/cv.pdf"
+            <Link
+              href="/cv"
               download
               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
             >
               <Download className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
               Download CV
-            </a>
+            </Link>
             <a
               href="#contact"
               className="group inline-flex items-center gap-2 rounded-full border border-gray-300 px-7 py-3.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary hover:text-primary dark:border-white/20 dark:text-gray-200 dark:hover:border-primary dark:hover:text-primary"

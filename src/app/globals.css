@@ -33,3 +33,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #8b5cf6;
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  body {
+    background: white !important;
+  }
+}

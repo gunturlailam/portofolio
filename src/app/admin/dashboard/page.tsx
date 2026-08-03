@@ -8,6 +8,7 @@ import { supabaseUrl, supabaseKey, envReady } from "@/lib/supabaseClient";
 import Toast, { type ToastType } from "@/components/Toast";
 import {
   LayoutDashboard,
+  Gauge,
   FolderKanban,
   Award,
   Briefcase,
@@ -21,9 +22,17 @@ import {
   LogOut,
   ExternalLink,
   Loader2,
+  Menu,
+  ArrowRight,
 } from "lucide-react";
 
-type Tab = "projek" | "sertifikat" | "pengalaman" | "pendidikan" | "pesan";
+type Tab =
+  | "dashboard"
+  | "projek"
+  | "sertifikat"
+  | "pengalaman"
+  | "pendidikan"
+  | "pesan";
 type Row = Record<string, any>;
 type Notify = (t: ToastType, m: string) => void;
 
@@ -53,7 +62,6 @@ async function makeUniqueSlug(
   while (taken.has(`${base}-${i}`)) i++;
   return `${base}-${i}`;
 }
-
 const fmtDate = (d: any) =>
   d
     ? new Date(d).toLocaleDateString("id-ID", {
@@ -560,20 +568,279 @@ function PendidikanForm({ db, initial, onSaved, notify }: any) {
   );
 }
 
+/* ---------------- overview / dashboard ---------------- */
+function Overview({
+  db,
+  user,
+  go,
+}: {
+  db: SupabaseClient | null;
+  user: string;
+  go: (t: Tab) => void;
+}) {
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [recentProjek, setRecentProjek] = useState<Row[]>([]);
+  const [recentPesan, setRecentPesan] = useState<Row[]>([]);
+
+  useEffect(() => {
+    if (!db) return;
+    (async () => {
+      const tables = [
+        "projek",
+        "sertifikat",
+        "pengalaman",
+        "pendidikan",
+        "pesan",
+      ];
+      const res: Record<string, number> = {};
+      await Promise.all(
+        tables.map(async (t) => {
+          const { count } = await db
+            .from(t)
+            .select("*", { count: "exact", head: true });
+          res[t] = count ?? 0;
+        }),
+      );
+      setCounts(res);
+      const { data: p } = await db
+        .from("projek")
+        .select("*")
+        .order("tanggal_selesai", { ascending: false })
+        .limit(4);
+      setRecentProjek(p ?? []);
+      const { data: m } = await db
+        .from("pesan")
+        .select("*")
+        .order("dibuat_pada", { ascending: false })
+        .limit(3);
+      setRecentPesan(m ?? []);
+    })();
+  }, [db]);
+
+  const h = new Date().getHours();
+  const greet =
+    h < 11
+      ? "Selamat pagi"
+      : h < 15
+        ? "Selamat siang"
+        : h < 19
+          ? "Selamat sore"
+          : "Selamat malam";
+  const name = (user.split("@")[0] || "Admin").replace(/[._]/g, " ");
+
+  const stats = [
+    {
+      key: "projek",
+      label: "Projek",
+      icon: FolderKanban,
+      cls: "text-primary bg-primary/10",
+    },
+    {
+      key: "sertifikat",
+      label: "Sertifikat",
+      icon: Award,
+      cls: "text-amber-500 bg-amber-500/10",
+    },
+    {
+      key: "pengalaman",
+      label: "Pengalaman",
+      icon: Briefcase,
+      cls: "text-secondary bg-secondary/10",
+    },
+    {
+      key: "pendidikan",
+      label: "Pendidikan",
+      icon: GraduationCap,
+      cls: "text-emerald-500 bg-emerald-500/10",
+    },
+    {
+      key: "pesan",
+      label: "Pesan",
+      icon: Inbox,
+      cls: "text-rose-500 bg-rose-500/10",
+    },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* sapaan */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl border border-gray-200/70 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 p-6 dark:border-white/10"
+      >
+        <p className="font-mono text-xs uppercase tracking-widest text-gray-400">
+          {new Date().toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
+        <h2 className="mt-2 text-2xl font-extrabold tracking-tight capitalize">
+          {greet}, {name} 👋
+        </h2>
+        <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+          Berikut ringkasan konten portofolio kamu hari ini.
+        </p>
+      </motion.div>
+
+      {/* stat cards */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {stats.map((s, i) => (
+          <motion.button
+            key={s.key}
+            onClick={() => go(s.key as Tab)}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06 }}
+            whileHover={{ y: -4 }}
+            className="group rounded-2xl border border-gray-200/70 bg-white p-4 text-left transition-shadow hover:shadow-lg dark:border-white/10 dark:bg-white/[0.03]"
+          >
+            <span
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${s.cls}`}
+            >
+              <s.icon className="h-4 w-4" />
+            </span>
+            <p className="mt-3 text-2xl font-extrabold">{counts[s.key] ?? 0}</p>
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              {s.label}
+            </p>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* panel terbaru */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-gray-200/70 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-bold">Projek Terbaru</h3>
+            <button
+              onClick={() => go("projek")}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            >
+              Kelola <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {recentProjek.length === 0 && (
+              <p className="py-6 text-center text-xs text-gray-400">
+                Belum ada proyek.
+              </p>
+            )}
+            {recentProjek.map((p) => (
+              <div key={p.id} className="flex items-center gap-3">
+                {p.gambar && (
+                  <img
+                    src={p.gambar}
+                    alt=""
+                    className="h-10 w-14 rounded-lg object-cover"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{p.judul}</p>
+                  <p className="font-mono text-[10px] text-gray-400">
+                    {p.kategori} · {fmtDate(p.tanggal_selesai)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200/70 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-bold">Pesan Terbaru</h3>
+            <button
+              onClick={() => go("pesan")}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            >
+              Kelola <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {recentPesan.length === 0 && (
+              <p className="py-6 text-center text-xs text-gray-400">
+                Belum ada pesan masuk.
+              </p>
+            )}
+            {recentPesan.map((m) => (
+              <div
+                key={m.id}
+                className="rounded-xl border border-gray-100 p-3 dark:border-white/5"
+              >
+                <p className="text-sm font-semibold">
+                  {m.nama}{" "}
+                  <span className="ml-1 font-mono text-[10px] font-normal text-gray-400">
+                    {m.email}
+                  </span>
+                </p>
+                <p className="mt-1 line-clamp-2 text-xs text-gray-500">
+                  {m.pesan}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------------- main ---------------- */
-const TABS: { id: Tab; label: string; icon: any }[] = [
-  { id: "projek", label: "Projek", icon: FolderKanban },
-  { id: "sertifikat", label: "Sertifikat", icon: Award },
-  { id: "pengalaman", label: "Pengalaman", icon: Briefcase },
-  { id: "pendidikan", label: "Pendidikan", icon: GraduationCap },
-  { id: "pesan", label: "Pesan", icon: Inbox },
+const TABS: { id: Tab; label: string; icon: any; desc: string }[] = [
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: Gauge,
+    desc: "Ringkasan konten portofolio kamu.",
+  },
+  {
+    id: "projek",
+    label: "Projek",
+    icon: FolderKanban,
+    desc: "Kelola kartu proyek di grid & halaman detail.",
+  },
+  {
+    id: "sertifikat",
+    label: "Sertifikat",
+    icon: Award,
+    desc: "Kelola sertifikat yang tampil di section & halaman sertifikat.",
+  },
+  {
+    id: "pengalaman",
+    label: "Pengalaman",
+    icon: Briefcase,
+    desc: "Kelola timeline pengalaman & organisasi.",
+  },
+  {
+    id: "pendidikan",
+    label: "Pendidikan",
+    icon: GraduationCap,
+    desc: "Kelola riwayat pendidikan di section About.",
+  },
+  {
+    id: "pesan",
+    label: "Pesan",
+    icon: Inbox,
+    desc: "Inbox pesan masuk dari form kontak.",
+  },
 ];
 const ORDER: Record<Tab, string> = {
+  dashboard: "dibuat_pada",
   projek: "tanggal_selesai",
   sertifikat: "tanggal_terbit",
   pengalaman: "tanggal_mulai",
   pendidikan: "tahun_mulai",
   pesan: "dibuat_pada",
+};
+const FORMS: Record<Tab, any> = {
+  dashboard: null,
+  projek: ProjekForm,
+  sertifikat: SertifikatForm,
+  pengalaman: PengalamanForm,
+  pendidikan: PendidikanForm,
+  pesan: null,
 };
 
 export default function DashboardPage() {
@@ -583,11 +850,12 @@ export default function DashboardPage() {
     [],
   );
   const [user, setUser] = useState("");
-  const [tab, setTab] = useState<Tab>("projek");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Row | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<{
     id: number;
     type: ToastType;
@@ -601,7 +869,10 @@ export default function DashboardPage() {
   }, [db]);
 
   const load = async () => {
-    if (!db) return;
+    if (!db || tab === "dashboard") {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const { data } = await db
       .from(tab)
@@ -622,176 +893,265 @@ export default function DashboardPage() {
       load();
     }
   };
-
   const signOut = async () => {
     await db?.auth.signOut();
     router.push("/admin/login");
     router.refresh();
   };
 
-  const FORMS: Record<Tab, any> = {
-    projek: ProjekForm,
-    sertifikat: SertifikatForm,
-    pengalaman: PengalamanForm,
-    pendidikan: PendidikanForm,
-    pesan: null,
-  };
+  const active = TABS.find((t) => t.id === tab)!;
   const FormComp = FORMS[tab];
+  const switchTab = (id: Tab) => {
+    setTab(id);
+    setEditing(null);
+    setOpen(false);
+    setMenuOpen(false);
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-24 dark:bg-[#0a0a0a]">
-      {/* header */}
-      <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-[#0a0a0a]/80">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white">
-              <LayoutDashboard className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="text-sm font-bold leading-none">Admin Panel</p>
-              <p className="font-mono text-[10px] text-gray-400">
-                {user || "…"}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold transition hover:border-primary hover:text-primary dark:border-white/10"
-            >
-              <ExternalLink className="h-3.5 w-3.5" /> Lihat Situs
-            </Link>
-            <button
-              onClick={signOut}
-              className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-500 transition hover:bg-rose-500 hover:text-white"
-            >
-              <LogOut className="h-3.5 w-3.5" /> Keluar
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-6 pt-10">
-        {/* tabs */}
-        <div className="mb-8 flex flex-wrap gap-2">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => {
-                setTab(t.id);
-                setEditing(null);
-                setOpen(false);
-              }}
-              className="relative rounded-full px-4 py-2 text-sm font-medium"
-            >
-              {tab === t.id && (
-                <motion.span
-                  layoutId="admTab"
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-              <span
-                className={`relative z-10 inline-flex items-center gap-2 ${tab === t.id ? "text-white" : "text-gray-600 dark:text-gray-300"}`}
-              >
-                <t.icon className="h-4 w-4" />
-                {t.label}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* toolbar */}
-        {FormComp && (
-          <div className="mb-5 flex items-center justify-between">
-            <p className="font-mono text-xs text-gray-400">
-              {rows.length} baris
+    <main className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a]">
+      {/* SIDEBAR DESKTOP */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-gray-200/70 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-[#0a0a0a]/80 lg:flex">
+        <div className="flex h-16 items-center gap-3 border-b border-gray-200/70 px-6 dark:border-white/10">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white">
+            <LayoutDashboard className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-sm font-bold leading-none">Admin Panel</p>
+            <p className="mt-0.5 truncate font-mono text-[10px] text-gray-400">
+              {user || "…"}
             </p>
-            <button
-              onClick={() => {
-                setEditing(null);
-                setOpen(true);
-              }}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:-translate-y-0.5"
-            >
-              <Plus className="h-4 w-4" /> Tambah
-            </button>
           </div>
-        )}
-
-        {/* list */}
-        <div className="space-y-3">
-          {loading &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-20 animate-pulse rounded-2xl bg-gray-200 dark:bg-white/10"
-              />
-            ))}
-          {!loading && rows.length === 0 && (
-            <div className="rounded-3xl border border-dashed border-gray-300 py-16 text-center text-sm text-gray-400 dark:border-white/10">
-              Belum ada data. Klik "Tambah".
-            </div>
-          )}
-          {!loading &&
-            rows.map((r) => (
-              <motion.div
-                key={r.id}
-                layout
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 rounded-2xl border border-gray-200/70 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03]"
+        </div>
+        <nav className="flex-1 overflow-y-auto px-4 py-6">
+          <p className="mb-3 px-2 font-mono text-[10px] uppercase tracking-widest text-gray-400">
+            Menu
+          </p>
+          <div className="space-y-1.5">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => switchTab(t.id)}
+                className={`relative flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${tab === t.id ? "text-white" : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"}`}
               >
-                {(r.gambar || r.file_gambar) && (
-                  <img
-                    src={r.gambar || r.file_gambar}
-                    alt=""
-                    className="h-14 w-20 shrink-0 rounded-lg object-cover"
+                {tab === t.id && (
+                  <motion.span
+                    layoutId="admNav"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold">
-                    {r.judul || r.nama_sertifikat || r.universitas || r.nama}
-                  </p>
-                  <p className="truncate font-mono text-[11px] text-gray-400">
-                    {r.kategori && (
-                      <span className="mr-2 text-primary">{r.kategori}</span>
-                    )}
-                    {r.penerbit && <span className="mr-2">{r.penerbit}</span>}
-                    {r.jurusan && <span className="mr-2">{r.jurusan}</span>}
-                    {r.email && <span className="mr-2">{r.email}</span>}
-                    {fmtDate(
-                      r.tanggal_selesai ||
-                        r.tanggal_terbit ||
-                        r.tanggal_mulai ||
-                        r.dibuat_pada,
-                    )}
-                    {r.tahun_mulai && ` · ${r.tahun_mulai}–${r.tahun_selesai}`}
-                  </p>
-                  {tab === "pesan" && (
-                    <p className="mt-1 line-clamp-2 text-xs text-gray-500">
-                      {r.pesan}
-                    </p>
-                  )}
-                </div>
-                {FormComp && (
-                  <button
-                    onClick={() => {
-                      setEditing(r);
-                      setOpen(true);
-                    }}
-                    className="rounded-full p-2 text-gray-400 transition hover:bg-primary/10 hover:text-primary"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
+                <t.icon className="relative z-10 h-4 w-4" />
+                <span className="relative z-10">{t.label}</span>
+                {tab === t.id && (
+                  <span className="relative z-10 ml-auto h-1.5 w-1.5 rounded-full bg-white/80" />
                 )}
-                <Del onConfirm={() => remove(r.id)} />
-              </motion.div>
+              </button>
             ))}
+          </div>
+        </nav>
+        <div className="space-y-2 border-t border-gray-200/70 p-4 dark:border-white/10">
+          <Link
+            href="/"
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 py-2.5 text-xs font-semibold transition hover:border-primary hover:text-primary dark:border-white/10"
+          >
+            <ExternalLink className="h-3.5 w-3.5" /> Lihat Situs
+          </Link>
+          <button
+            onClick={signOut}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-rose-500/10 py-2.5 text-xs font-semibold text-rose-500 transition hover:bg-rose-500 hover:text-white"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Keluar
+          </button>
+        </div>
+      </aside>
+
+      {/* DRAWER MOBILE */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 340, damping: 32 }}
+              className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white p-4 dark:bg-[#0a0a0a] lg:hidden"
+            >
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white">
+                    <LayoutDashboard className="h-4 w-4" />
+                  </span>
+                  <p className="text-sm font-bold">Admin Panel</p>
+                </div>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-full p-2 text-gray-400"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => switchTab(t.id)}
+                    className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium ${tab === t.id ? "bg-gradient-to-r from-primary to-secondary text-white" : "text-gray-600 dark:text-gray-300"}`}
+                  >
+                    <t.icon className="h-4 w-4" /> {t.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-auto space-y-2 pt-6">
+                <Link
+                  href="/"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 py-2.5 text-xs font-semibold dark:border-white/10"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Lihat Situs
+                </Link>
+                <button
+                  onClick={signOut}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-rose-500/10 py-2.5 text-xs font-semibold text-rose-500"
+                >
+                  <LogOut className="h-3.5 w-3.5" /> Keluar
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* KONTEN */}
+      <div className="lg:pl-64">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200/70 bg-white/80 px-5 backdrop-blur-xl dark:border-white/10 dark:bg-[#0a0a0a]/80 lg:hidden">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white">
+              <LayoutDashboard className="h-4 w-4" />
+            </span>
+            <p className="text-sm font-bold">Admin Panel</p>
+          </div>
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="rounded-full border border-gray-300 p-2 dark:border-white/10"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+        </header>
+
+        <div className="mx-auto max-w-5xl px-6 pb-24 pt-10">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
+                {active.label}
+              </h1>
+              <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+                {active.desc}
+              </p>
+            </div>
+            {FormComp && (
+              <button
+                onClick={() => {
+                  setEditing(null);
+                  setOpen(true);
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:-translate-y-0.5"
+              >
+                <Plus className="h-4 w-4" /> Tambah
+              </button>
+            )}
+          </div>
+
+          {tab === "dashboard" ? (
+            <Overview db={db} user={user} go={switchTab} />
+          ) : (
+            <div className="space-y-3">
+              {loading &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-20 animate-pulse rounded-2xl bg-gray-200 dark:bg-white/10"
+                  />
+                ))}
+              {!loading && rows.length === 0 && (
+                <div className="rounded-3xl border border-dashed border-gray-300 py-16 text-center text-sm text-gray-400 dark:border-white/10">
+                  Belum ada data. Klik "Tambah".
+                </div>
+              )}
+              {!loading &&
+                rows.map((r) => (
+                  <motion.div
+                    key={r.id}
+                    layout
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-4 rounded-2xl border border-gray-200/70 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03]"
+                  >
+                    {(r.gambar || r.file_gambar) && (
+                      <img
+                        src={r.gambar || r.file_gambar}
+                        alt=""
+                        className="h-14 w-20 shrink-0 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold">
+                        {r.judul ||
+                          r.nama_sertifikat ||
+                          r.universitas ||
+                          r.nama}
+                      </p>
+                      <p className="truncate font-mono text-[11px] text-gray-400">
+                        {r.kategori && (
+                          <span className="mr-2 text-primary">
+                            {r.kategori}
+                          </span>
+                        )}
+                        {r.penerbit && (
+                          <span className="mr-2">{r.penerbit}</span>
+                        )}
+                        {r.jurusan && <span className="mr-2">{r.jurusan}</span>}
+                        {r.email && <span className="mr-2">{r.email}</span>}
+                        {fmtDate(
+                          r.tanggal_selesai ||
+                            r.tanggal_terbit ||
+                            r.tanggal_mulai ||
+                            r.dibuat_pada,
+                        )}
+                        {r.tahun_mulai &&
+                          ` · ${r.tahun_mulai}–${r.tahun_selesai}`}
+                      </p>
+                      {tab === "pesan" && (
+                        <p className="mt-1 line-clamp-2 text-xs text-gray-500">
+                          {r.pesan}
+                        </p>
+                      )}
+                    </div>
+                    {FormComp && (
+                      <button
+                        onClick={() => {
+                          setEditing(r);
+                          setOpen(true);
+                        }}
+                        className="rounded-full p-2 text-gray-400 transition hover:bg-primary/10 hover:text-primary"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                    )}
+                    <Del onConfirm={() => remove(r.id)} />
+                  </motion.div>
+                ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* modal form */}
       <Modal
         open={open && !!FormComp}
         onClose={() => setOpen(false)}
@@ -811,7 +1171,6 @@ export default function DashboardPage() {
         )}
       </Modal>
 
-      {/* toast */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-[90] flex flex-col items-end gap-3">
         <AnimatePresence>
           {toast && (

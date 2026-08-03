@@ -298,8 +298,9 @@ export default function Skills() {
                       className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-25"
                       style={{ backgroundColor: skill.brand }}
                     />
+
                     <div className="relative">
-                      <div className="flex items-start justify-between">
+                      <div>
                         <div
                           className="flex h-12 w-12 items-center justify-center rounded-xl border text-foreground transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110"
                           style={{
@@ -309,30 +310,11 @@ export default function Skills() {
                         >
                           <TechMark skill={skill} />
                         </div>
-                        <span className="font-mono text-[10px] font-medium text-gray-400">
-                          {skill.level}%
-                        </span>
                       </div>
 
                       <p className="mt-3.5 text-sm font-semibold text-foreground">
                         {skill.name}
                       </p>
-
-                      {/* proficiency bar */}
-                      <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200/80 dark:bg-white/10">
-                        <motion.div
-                          className="h-full rounded-full"
-                          style={{ backgroundColor: skill.brand }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.level}%` }}
-                          viewport={{ once: true, amount: 0.5 }}
-                          transition={{
-                            duration: 0.9,
-                            delay: 0.15 + i * 0.05,
-                            ease,
-                          }}
-                        />
-                      </div>
                     </div>
                   </motion.div>
                 ))}

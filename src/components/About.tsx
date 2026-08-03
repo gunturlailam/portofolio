@@ -63,7 +63,11 @@ const fadeUp = {
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: {
+      delay: i * 0.08,
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
   }),
 };
 
@@ -169,7 +173,10 @@ export default function About() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+            }}
           >
             <div className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white/70 p-7 shadow-sm backdrop-blur transition-shadow duration-500 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03]">
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl transition-transform duration-700 group-hover:scale-150" />

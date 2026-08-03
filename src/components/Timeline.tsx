@@ -125,7 +125,12 @@ export default function Timeline() {
                       transition={{
                         duration: 0.5,
                         delay: i * 0.08,
-                        ease: [0.22, 1, 0.36, 1],
+                        ease: [0.22, 1, 0.36, 1] as [
+                          number,
+                          number,
+                          number,
+                          number,
+                        ],
                       }}
                       className="group relative rounded-2xl border border-gray-200 bg-white/70 p-6 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03]"
                     >

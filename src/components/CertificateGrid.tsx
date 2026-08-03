@@ -204,7 +204,12 @@ export default function CertificateGrid({
                   transition={{
                     duration: 0.55,
                     delay: i * 0.08,
-                    ease: [0.22, 1, 0.36, 1],
+                    ease: [0.22, 1, 0.36, 1] as [
+                      number,
+                      number,
+                      number,
+                      number,
+                    ],
                   }}
                   className="group relative rounded-2xl border border-gray-200/80 bg-white/80 p-4 shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.04]"
                 >

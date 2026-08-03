@@ -204,7 +204,10 @@ export default function ProjekDetailPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+              }}
               className="group relative mb-14 overflow-hidden rounded-3xl border border-gray-200/70 shadow-xl dark:border-white/10"
             >
               <div className="aspect-[21/9] w-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10">

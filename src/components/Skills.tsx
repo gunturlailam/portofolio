@@ -68,7 +68,7 @@ const hexA = (hex: string, a: number) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 function TechMark({ skill }: { skill: Skill }) {
   const c = "h-6 w-6";

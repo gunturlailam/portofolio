@@ -10,6 +10,7 @@ const menus = [
   { label: "Pendidikan", href: "#education" },
   { label: "Pengalaman", href: "#experience" },
   { label: "Projek", href: "#work" },
+  { label: "Sertifikat", href: "#certificates" },
   { label: "Kontak", href: "#contact" },
 ];
 
@@ -40,14 +41,12 @@ export default function Navbar() {
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="group flex items-center text-lg font-bold tracking-tight"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="group flex items-center text-lg font-extrabold tracking-tight"
         >
           Guntur
-          <span className="text-primary transition-transform duration-300 group-hover:rotate-12 group-hover:scale-125">
-            .
-          </span>
+          <span className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-gradient-to-br from-primary to-secondary transition-transform duration-300 group-hover:scale-150" />
         </Link>
-
         {/* Desktop menu */}
         <div className="hidden items-center gap-8 md:flex">
           {menus.map((m) => (

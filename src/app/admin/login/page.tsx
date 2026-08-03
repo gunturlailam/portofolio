@@ -207,27 +207,6 @@ function LoginForm() {
               {loading === "password" ? "Memeriksa…" : "Masuk"}
             </button>
           </form>
-
-          <div className="my-6 flex items-center gap-4">
-            <span className="h-px flex-1 bg-gray-200 dark:bg-white/10" />
-            <span className="font-mono text-[11px] uppercase tracking-widest text-gray-400">
-              atau
-            </span>
-            <span className="h-px flex-1 bg-gray-200 dark:bg-white/10" />
-          </div>
-
-          <button
-            onClick={handleGoogle}
-            disabled={!envReady || loading !== "none"}
-            className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-          >
-            {loading === "google" ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <GoogleG className="h-4 w-4" />
-            )}
-            Lanjutkan dengan Google
-          </button>
         </div>
 
         <p className="mt-6 text-center">

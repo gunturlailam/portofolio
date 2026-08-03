@@ -9,7 +9,7 @@ import {
   BookOpen,
   Target,
 } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, envReady } from "@/lib/supabaseClient";
 
 interface Pendidikan {
   id: string;
@@ -90,9 +90,9 @@ export default function About() {
           .order("tahun_mulai", { ascending: false });
         if (!alive) return;
         if (error) throw error;
-        setData(rows && rows.length ? rows : FALLBACK_PENDIDIKAN);
+        setData(rows ?? []);
       } catch {
-        if (alive) setData(FALLBACK_PENDIDIKAN);
+        if (alive) setData([]);
       } finally {
         if (alive) setLoading(false);
       }

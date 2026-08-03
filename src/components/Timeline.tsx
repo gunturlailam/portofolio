@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Users } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, envReady } from "@/lib/supabaseClient";
 
 interface Pengalaman {
   id: string;
@@ -49,6 +49,14 @@ export default function Timeline() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      // Dev lokal tanpa env → pakai contoh biar kelihatan hidup.
+      if (!envReady) {
+        if (alive) {
+          setData(FALLBACK_PENGALAMAN);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const { data: rows, error } = await supabase
           .from("pengalaman")
@@ -56,9 +64,9 @@ export default function Timeline() {
           .order("tanggal_mulai", { ascending: false });
         if (!alive) return;
         if (error) throw error;
-        setData(rows && rows.length ? rows : FALLBACK_PENGALAMAN);
+        setData(rows ?? []);
       } catch {
-        if (alive) setData(FALLBACK_PENGALAMAN);
+        if (alive) setData([]);
       } finally {
         if (alive) setLoading(false);
       }
@@ -100,7 +108,15 @@ export default function Timeline() {
 
         <div className="relative">
           {/* garis vertikal */}
-          <div className="absolute left-4 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-primary via-secondary to-transparent md:left-1/2" />
+          {data.length > 0 && (
+            <div className="absolute left-4 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-primary via-secondary to-transparent md:left-1/2" />
+          )}
+
+          {!loading && data.length === 0 && (
+            <p className="rounded-2xl border border-dashed border-gray-300 py-14 text-center text-sm text-gray-400 dark:border-white/10">
+              Belum ada pengalaman — tambahkan lewat Dashboard Admin.
+            </p>
+          )}
 
           <div className="space-y-10">
             {loading

@@ -8,14 +8,14 @@ const infoRows = [
   {
     icon: Mail,
     label: "Email",
-    value: "guntur@example.com",
-    href: "mailto:guntur@example.com",
+    value: "gunturlailamyuro8@gmail.com",
+    href: "mailto:gunturlailamyuro8@gmail.com",
   },
   {
     icon: MessageCircle,
     label: "WhatsApp",
-    value: "+62 812-3456-7890",
-    href: "https://wa.me/6281234567890",
+    value: "+62 895-6025-7246-6",
+    href: "https://wa.me/62895602572476",
   },
   { icon: MapPin, label: "Lokasi", value: "Padang, Indonesia", href: null },
 ];

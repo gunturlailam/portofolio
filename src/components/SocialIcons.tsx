@@ -67,31 +67,31 @@ const socials = [
   {
     name: "Instagram",
     Icon: InstagramIcon,
-    href: "https://instagram.com/username",
+    href: "https://www.instagram.com/gunturlailam/",
     hover: "hover:text-pink-500 hover:border-pink-500/50",
   },
   {
     name: "WhatsApp",
     Icon: WhatsAppIcon,
-    href: "https://wa.me/6281234567890",
+    href: "https://wa.me/62895602572476",
     hover: "hover:text-green-500 hover:border-green-500/50",
   },
   {
     name: "Email",
     Icon: MailIcon,
-    href: "mailto:guntur@example.com",
+    href: "mailto:gunturlailamyuro8@gmail.com",
     hover: "hover:text-red-500 hover:border-red-500/50",
   },
   {
     name: "GitHub",
     Icon: GithubIcon,
-    href: "https://github.com/username",
+    href: "https://github.com/gunturlailam",
     hover: "hover:text-gray-900 dark:hover:text-white hover:border-gray-500/60",
   },
   {
     name: "LinkedIn",
     Icon: LinkedinIcon,
-    href: "https://linkedin.com/in/username",
+    href: "https://www.linkedin.com/in/guntur-lailam-yuro-48b1901b6/",
     hover: "hover:text-blue-600 hover:border-blue-600/50",
   },
 ];

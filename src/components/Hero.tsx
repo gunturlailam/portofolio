@@ -63,7 +63,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-200"
           >
-            Web Developer & UI/UX Enthusiast dari Padang 🇮🇩
+            Web Developer
           </motion.p>
 
           <motion.p
@@ -72,8 +72,8 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-4 max-w-md leading-relaxed text-gray-500 dark:text-gray-400"
           >
-            Mahasiswa Teknik Informatika Universitas Jayanusa yang bersemangat
-            membangun produk digital yang cepat, indah, dan fungsional dengan
+            Mahasiswa Sistem Informasi Universitas Jayanusa yang senang mengubah
+            ide jadi website yang nyaman dipakai. Sehari-hari berkutat dengan
             PHP, MySQL, dan ekosistem JavaScript modern.
           </motion.p>
 

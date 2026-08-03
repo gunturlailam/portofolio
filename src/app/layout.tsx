@@ -2,44 +2,68 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { html } from "framer-motion/client";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+// Ganti dengan URL deploy lu nanti (Vercel) biar OG/absolute URL bener.
+const SITE_URL = "https://portofolio-guntur.vercel.app";
 
 export const metadata: Metadata = {
-  title: "Guntur Lailam Yuro - Personal Portfolio",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Guntur Lailam Yuro — Web Developer",
+    template: "%s | Guntur Lailam Yuro",
+  },
   description:
-    "Portofolio pribadi dinamis Guntur Lailam Yuro yang dibangun dengan Next.js 14, Tailwind CSS, Framer Motion, dan databse.",
+    "Portofolio pribadi Guntur Lailam Yuro — Web Developer dari Padang. Mahasiswa Sistem Informasi Universitas Jayanusa yang suka membangun web yang nyaman dipakai.",
+  authors: [{ name: "Guntur Lailam Yuro" }],
+  creator: "Guntur Lailam Yuro",
+  keywords: [
+    "Guntur Lailam Yuro",
+    "Web Developer",
+    "Portofolio",
+    "Next.js",
+    "Supabase",
+    "Tailwind CSS",
+    "Padang",
+    "Sistem Informasi",
+  ],
+  robots: { index: true, follow: true },
+  themeColor: "#8B5CF6",
   openGraph: {
-    title: "Guntur Lailam Yuro - Personal Portfolio",
+    type: "website",
+    locale: "id_ID",
+    siteName: "Guntur Lailam Yuro — Portfolio",
+    title: "Guntur Lailam Yuro — Web Developer",
     description:
-      "Portofolio pribadi dinamis Guntur Lailam Yuro yang dibangun dengan Next.js 14, Tailwind CSS, Framer Motion, dan Supabase.",
-    url: "https://portofolio-saya.vercel.app",
-    siteName: "Guntur Lailam Yuro Portfolio",
+      "Portofolio pribadi Guntur Lailam Yuro — Web Developer dari Padang.",
+    url: "/",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&q=80&w=120",
+        url: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&q=80&w=1200",
         width: 1200,
         height: 630,
-        alt: "Guntur Lailam Yuro Portfolio Preview",
+        alt: "Guntur Lailam Yuro — Web Developer",
       },
     ],
-    locale: "id_ID",
-    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Guntur Lailam Yuro — Web Developer",
+    description:
+      "Portofolio pribadi Guntur Lailam Yuro — Web Developer dari Padang.",
+    images: [
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&q=80&w=1200",
+    ],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased scroll-smooth`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

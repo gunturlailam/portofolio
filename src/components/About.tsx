@@ -6,7 +6,7 @@ import {
   GraduationCap,
   CalendarDays,
   Sparkles,
-  Coffee,
+  BookOpen,
   Target,
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
@@ -54,8 +54,8 @@ const FALLBACK_PENDIDIKAN: Pendidikan[] = [
 const quickFacts = [
   { icon: MapPin, label: "Berbasis di", value: "Padang, Indonesia" },
   { icon: GraduationCap, label: "Status", value: "Mahasiswa · Jayanusa '23" },
-  { icon: Target, label: "Fokus", value: "Web Dev & UI/UX" },
-  { icon: Coffee, label: "Bahan bakar", value: "Kopi susu & lofi" },
+  { icon: BookOpen, label: "Jurusan", value: "Sistem Informasi" },
+  { icon: Target, label: "Minat", value: "Web Development" },
 ];
 
 const fadeUp = {
@@ -130,12 +130,11 @@ export default function About() {
               custom={1}
               className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl"
             >
-              Membangun hal bermakna,
+              Ngoding, ngopi,
               <br className="hidden sm:block" />{" "}
               <span className="font-light italic text-gray-400 dark:text-gray-500">
-                satu baris kode
-              </span>{" "}
-              dalam satu waktu.
+                dan terus belajar.
+              </span>
             </motion.h2>
 
             <motion.div
@@ -148,22 +147,18 @@ export default function About() {
                 <span className="font-semibold text-foreground">
                   Guntur Lailam Yuro
                 </span>{" "}
-                — mahasiswa Teknik Informatika Universitas Jayanusa angkatan
-                2023 yang tumbuh di Padang. Saya jatuh cinta pada momen ketika
-                ide abstrak berubah jadi antarmuka yang bisa disentuh, diklik,
-                dan dirasakan manfaatnya oleh orang sungguhan.
+                — mahasiswa Sistem Informasi Universitas Jayanusa angkatan 2023,
+                asli Padang. Mulai ngoding karena iseng, sekarang malah jadi hal
+                yang paling saya suka.
               </p>
               <p>
-                Hari-hari saya diisi dengan PHP & MySQL untuk fondasi yang
-                kokoh, lalu Next.js, Tailwind, dan Framer Motion untuk lapisan
-                pengalaman yang halus. Saya percaya produk yang baik bukan cuma
-                yang <em>berfungsi</em>, tapi yang membuat penggunanya tersenyum
-                kecil tanpa sadar — lewat detail, ritme, dan rasa.
+                Fokus saya di web development: PHP & MySQL untuk backend,
+                Next.js dan Tailwind untuk frontend. Saya lebih suka kode yang
+                sederhana dan gampang dibaca daripada yang kelihatan canggih.
               </p>
               <p>
-                Di luar layar, saya aktif berorganisasi, ngoprek desain, dan
-                mengejar rasa penasaran tentang bagaimana teknologi bisa
-                menyelesaikan masalah sehari-hari dengan elegan.
+                Di luar ngoding, saya aktif di organisasi, dan selalu penasaran
+                sama cara teknologi nyelesain masalah sehari-hari.
               </p>
             </motion.div>
           </motion.div>

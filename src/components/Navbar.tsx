@@ -6,9 +6,11 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import Link from "next/link";
 
 const menus = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Tentang", href: "#about" },
+  { label: "Pendidikan", href: "#education" },
+  { label: "Pengalaman", href: "#experience" },
+  { label: "Projek", href: "#work" },
+  { label: "Kontak", href: "#contact" },
 ];
 
 export default function Navbar() {
@@ -36,9 +38,14 @@ export default function Navbar() {
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="group flex items-center text-lg font-bold tracking-tight">
+        <Link
+          href="/"
+          className="group flex items-center text-lg font-bold tracking-tight"
+        >
           Guntur
-          <span className="text-primary transition-transform duration-300 group-hover:rotate-12 group-hover:scale-125">.</span>
+          <span className="text-primary transition-transform duration-300 group-hover:rotate-12 group-hover:scale-125">
+            .
+          </span>
         </Link>
 
         {/* Desktop menu */}
@@ -47,7 +54,7 @@ export default function Navbar() {
             <a
               key={m.label}
               href={m.href}
-              className="relative text-sm font-medium text-gray-600 transition-colors hover:text-primary dark:text-gray-300 dark:hover:text-primary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 hover:after:w-full"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 transition-all hover:bg-gray-900/5 hover:text-foreground dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
             >
               {m.label}
             </a>
@@ -57,7 +64,12 @@ export default function Navbar() {
             aria-label="Toggle theme"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white/60 text-gray-600 transition-all hover:scale-110 hover:border-primary/50 hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
           >
-            {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
+            {mounted &&
+              (theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              ))}
           </button>
         </div>
 
@@ -68,14 +80,23 @@ export default function Navbar() {
             aria-label="Toggle theme"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white/60 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
           >
-            {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
+            {mounted &&
+              (theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              ))}
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white/60 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
           >
-            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {mobileOpen ? (
+              <X className="h-4 w-4" />
+            ) : (
+              <Menu className="h-4 w-4" />
+            )}
           </button>
         </div>
       </nav>

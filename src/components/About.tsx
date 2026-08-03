@@ -212,7 +212,8 @@ export default function About() {
 
         {/* perjalanan pendidikan — list vertikal, bukan grid kartu generik */}
         <motion.div
-          className="mt-20 md:mt-28"
+          id="education"
+          className="mt-20 scroll-mt-28 md:mt-28"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}

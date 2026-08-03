@@ -34,12 +34,25 @@ const FALLBACK_PENGALAMAN: Pengalaman[] = [
   },
 ];
 
-const fmt = (d: string | null) => {
+const fmtDateSafe = (d: string | null) => {
   if (!d) return "Sekarang";
-  return new Date(d).toLocaleDateString("id-ID", {
-    month: "short",
-    year: "numeric",
-  });
+  const parts = d.split("-");
+  if (parts.length !== 3) return d;
+  const months = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+  return `${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
 };
 
 export default function Timeline() {
@@ -162,8 +175,8 @@ export default function Timeline() {
                           {item.tipe}
                         </span>
                         <span className="font-mono text-xs text-gray-400">
-                          {fmt(item.tanggal_mulai)} —{" "}
-                          {fmt(item.tanggal_selesai)}
+                          {fmtDateSafe(item.tanggal_mulai)} —{" "}
+                          {fmtDateSafe(item.tanggal_selesai)}
                         </span>
                       </div>
                       <h3 className="text-lg font-bold text-foreground">

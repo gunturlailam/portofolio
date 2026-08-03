@@ -54,12 +54,26 @@ const FALLBACK_SERTIFIKAT: Sertifikat[] = [
   },
 ];
 
-const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+const fmtDateSafe = (d: string) => {
+  if (!d) return "—";
+  const parts = d.split("-");
+  if (parts.length !== 3) return d;
+  const months = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+  return `${parseInt(parts[2])} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+};
 
 interface Props {
   limit?: number;
@@ -257,7 +271,7 @@ export default function CertificateGrid({
                       </p>
                       <p className="flex items-center gap-2">
                         <CalendarDays className="h-3.5 w-3.5 text-secondary" />
-                        {fmtDate(s.tanggal_terbit)}
+                        {fmtDateSafe(s.tanggal_terbit)}
                       </p>
                     </div>
                   </div>

@@ -52,10 +52,12 @@ async function makeUniqueSlug(
   base: string,
   exceptId?: string,
 ) {
-  const { data } = await db
+  const fallback = `${base}-${Date.now().toString(36)}`;
+  const { data, error } = await db
     .from("projek")
     .select("id,slug")
     .ilike("slug", `${base}%`);
+  if (error || !data) return fallback; // kalau query gagal, pakai suffix waktu biar pasti unik
   const taken = new Set(
     (data ?? []).filter((r: any) => r.id !== exceptId).map((r: any) => r.slug),
   );
@@ -278,14 +280,26 @@ function ProjekForm({
   const set = (k: string, v: any) => setF((p) => ({ ...p, [k]: v }));
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return; // cegah double-submit
     setBusy(true);
-    const slug = await makeUniqueSlug(db, slugify(f.judul), initial?.id);
+    let slug = await makeUniqueSlug(db, slugify(f.judul), initial?.id);
     const payload = { ...f, tanggal_selesai: f.tanggal_selesai || null, slug };
-    const { error } = initial
+
+    let res = initial
       ? await db.from("projek").update(payload).eq("id", initial.id)
       : await db.from("projek").insert(payload);
+
+    // Kalau masih kena unique-violation (23505), pakai suffix waktu & coba lagi
+    if (res.error && res.error.code === "23505") {
+      slug = `${slugify(f.judul)}-${Date.now().toString(36)}`;
+      const p2 = { ...payload, slug };
+      res = initial
+        ? await db.from("projek").update(p2).eq("id", initial.id)
+        : await db.from("projek").insert(p2);
+    }
+
     setBusy(false);
-    if (error) notify("error", error.message);
+    if (res.error) notify("error", res.error.message);
     else {
       notify("success", `Projek tersimpan (slug: ${slug})`);
       onSaved();

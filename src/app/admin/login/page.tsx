@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createBrowserClient } from "@supabase/ssr";
@@ -11,12 +11,15 @@ import {
   ArrowLeft,
   ShieldAlert,
 } from "lucide-react";
-import {
-  envReady,
-  envDebug,
-  supabaseUrl,
-  supabaseKey,
-} from "@/lib/supabaseClient";
+import { envReady, supabaseUrl, supabaseKey } from "@/lib/supabaseClient";
+
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+const isAllowedEmail = (email: string) =>
+  ADMIN_EMAILS.length === 0 ||
+  ADMIN_EMAILS.includes(email.trim().toLowerCase());
 
 const GoogleG = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
@@ -39,11 +42,16 @@ const GoogleG = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const denied = searchParams.get("denied") === "1";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    denied ? "Email ini tidak diizinkan mengakses admin." : "",
+  );
   const [loading, setLoading] = useState<"none" | "password" | "google">(
     "none",
   );
@@ -53,25 +61,37 @@ export default function AdminLoginPage() {
     [],
   );
 
-  // kalau udah login, langsung ke dashboard
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/admin/dashboard");
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      const uEmail = data.session.user?.email ?? "";
+      if (denied || !isAllowedEmail(uEmail)) {
+        await supabase.auth.signOut();
+        setError("Email ini tidak diizinkan mengakses admin.");
+      } else {
+        router.replace("/admin/dashboard");
+      }
     });
-  }, [supabase, router]);
+  }, [supabase, router, denied]);
 
   const handlePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
     setError("");
     setLoading("password");
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       setError(error.message);
+      setLoading("none");
+      return;
+    }
+    if (!isAllowedEmail(data.user?.email ?? email)) {
+      await supabase.auth.signOut();
+      setError("Email ini tidak terdaftar sebagai admin.");
       setLoading("none");
       return;
     }
@@ -98,7 +118,6 @@ export default function AdminLoginPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
-      {/* ambient */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_40%,#000_40%,transparent_100%)]" />
         <div className="absolute -top-24 left-1/3 h-96 w-96 rounded-full bg-primary/15 blur-[120px]" />
@@ -110,12 +129,7 @@ export default function AdminLoginPage() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{
           duration: 0.6,
-          ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [
-            number,
-            number,
-            number,
-            number,
-          ],
+          ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
         }}
         className="w-full max-w-md"
       >
@@ -128,7 +142,7 @@ export default function AdminLoginPage() {
           </Link>
           <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] uppercase tracking-widest text-primary">
             <ShieldAlert className="h-3.5 w-3.5" />
-            Area Admin
+            Area Admin — Terbatas
           </p>
         </div>
 
@@ -137,25 +151,13 @@ export default function AdminLoginPage() {
             Masuk Dashboard
           </h1>
           <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
-            Kelola proyek, sertifikat, pengalaman & pendidikan.
+            Halaman ini hanya bisa diakses oleh email yang terdaftar.
           </p>
 
           {!envReady && (
             <div className="mt-5 rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-[13px] leading-relaxed text-amber-600 dark:text-amber-400">
-              <strong>Supabase belum terbaca oleh aplikasi.</strong>
-              <div className="mt-2 space-y-1 font-mono text-[11px]">
-                <p>URL : {envDebug.url ?? "❌ TIDAK TERBACA (undefined)"}</p>
-                <p>
-                  KEY :{" "}
-                  {envDebug.keyLen
-                    ? `✅ ${envDebug.keyLen} karakter`
-                    : "❌ TIDAK TERBACA (undefined)"}
-                </p>
-              </div>
-              <p className="mt-2">
-                Kalau ❌ → file/nama/restart yang bermasalah. Kalau ✅ tapi
-                notice masih ada → hard refresh.
-              </p>
+              <strong>Supabase belum dikonfigurasi.</strong> Isi env lalu
+              restart dev server.
             </div>
           )}
 
@@ -239,5 +241,13 @@ export default function AdminLoginPage() {
         </p>
       </motion.div>
     </main>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

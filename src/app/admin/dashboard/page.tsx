@@ -98,12 +98,14 @@ function ImgUpload({
   onChange,
   folder,
   notify,
+  accept = "image/*",
 }: {
   db: SupabaseClient;
   value: string;
   onChange: (v: string) => void;
   folder: string;
   notify: Notify;
+  accept?: string; // ← Tambahin ini
 }) {
   const [busy, setBusy] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
@@ -156,7 +158,7 @@ function ImgUpload({
       <input
         ref={ref}
         type="file"
-        accept="image/*"
+        accept={accept}
         className="hidden"
         onChange={(e) => e.target.files?.[0] && pick(e.target.files[0])}
       />
@@ -388,13 +390,14 @@ function SertifikatForm({ db, initial, onSaved, notify }: any) {
           />
         </Field>
       </div>
-      <Field label="Gambar">
+      <Field label="File Sertifikat (PDF/Gambar)">
         <ImgUpload
           db={db}
           folder="sertifikat"
           value={f.file_gambar}
           onChange={(v) => set("file_gambar", v)}
           notify={notify}
+          accept="image/*,application/pdf"
         />
       </Field>
       <button

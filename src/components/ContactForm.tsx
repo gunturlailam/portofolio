@@ -243,10 +243,6 @@ export default function ContactForm() {
               </>
             )}
           </button>
-
-          <p className="mt-4 font-mono text-[11px] text-gray-400">
-            * Pesan disimpan aman ke tabel `pesan` di Supabase.
-          </p>
         </motion.form>
       </div>
 

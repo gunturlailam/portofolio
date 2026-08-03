@@ -290,16 +290,6 @@ export default function About() {
                 ))}
           </div>
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-10 flex items-center gap-2 font-mono text-xs text-gray-400"
-        >
-          <Sparkles className="h-3.5 w-3.5 text-secondary" />
-          Data pendidikan dimuat dinamis dari Supabase.
-        </motion.p>
       </div>
     </section>
   );

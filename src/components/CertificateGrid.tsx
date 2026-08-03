@@ -8,6 +8,7 @@ import {
   CalendarDays,
   ArrowRight,
   Inbox,
+  FileText,
 } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
 
@@ -230,18 +231,32 @@ export default function CertificateGrid({
                   {/* frame dalam (gaya sertifikat) */}
                   <div className="pointer-events-none absolute inset-2 rounded-xl border border-gray-200/70 dark:border-white/10" />
 
-                  {/* gambar */}
+                  {/* gambar / pdf */}
                   <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10">
                     <div className="aspect-[16/10]">
-                      <img
-                        src={s.file_gambar ?? ""}
-                        alt={s.nama_sertifikat}
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                        className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-108"
-                      />
+                      {s.file_gambar && /\.pdf(\?.*)?$/i.test(s.file_gambar) ? (
+                        <a
+                          href={s.file_gambar}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex h-full flex-col items-center justify-center gap-2 bg-amber-50 text-amber-700 transition-colors hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-300"
+                        >
+                          <FileText className="h-8 w-8" />
+                          <span className="text-sm font-semibold">
+                            Lihat PDF
+                          </span>
+                        </a>
+                      ) : (
+                        <img
+                          src={s.file_gambar ?? ""}
+                          alt={s.nama_sertifikat}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                          className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-108"
+                        />
+                      )}
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 transition-opacity group-hover:opacity-70" />
 

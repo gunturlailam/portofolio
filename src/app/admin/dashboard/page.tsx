@@ -25,6 +25,7 @@ import {
   Loader2,
   Menu,
   ArrowRight,
+  FileText,
 } from "lucide-react";
 
 type Tab =
@@ -105,10 +106,14 @@ function ImgUpload({
   onChange: (v: string) => void;
   folder: string;
   notify: Notify;
-  accept?: string; // ← Tambahin ini
+  accept?: string;
 }) {
   const [busy, setBusy] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const isPdf = /\.pdf(\?.*)?$/i.test(value || "");
+  const isImage =
+    !isPdf &&
+    /\.(png|jpe?g|gif|webp|svg|bmp|avif|ico)(\?.*)?$/i.test(value || "");
   const pick = async (f: File) => {
     setBusy(true);
     const path = `${folder}/${Date.now()}-${f.name.replace(/\s+/g, "-")}`;
@@ -117,7 +122,7 @@ function ImgUpload({
     else {
       const { data } = db.storage.from("portofolio").getPublicUrl(path);
       onChange(data.publicUrl);
-      notify("success", "Gambar terupload ke Storage.");
+      notify("success", "File tersimpan ke Storage.");
     }
     setBusy(false);
   };
@@ -125,11 +130,27 @@ function ImgUpload({
     <div className="flex items-center gap-4">
       <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-white/10 dark:bg-white/5">
         {value ? (
-          <img
-            src={value}
-            alt="preview"
-            className="h-full w-full object-cover"
-          />
+          isPdf ? (
+            <div className="flex h-full flex-col items-center justify-center bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
+              <FileText className="h-6 w-6" />
+              <span className="mt-1 text-[10px] font-semibold uppercase">
+                PDF
+              </span>
+            </div>
+          ) : isImage ? (
+            <img
+              src={value}
+              alt="preview"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-gray-500">
+              <Upload className="h-5 w-5" />
+              <span className="mt-1 text-[10px] font-semibold uppercase">
+                FILE
+              </span>
+            </div>
+          )
         ) : (
           <div className="flex h-full items-center justify-center text-gray-300">
             <Upload className="h-5 w-5" />
@@ -149,7 +170,7 @@ function ImgUpload({
           className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold transition hover:border-primary hover:text-primary dark:border-white/10"
         >
           <Upload className="h-3.5 w-3.5" />{" "}
-          {value ? "Ganti Gambar" : "Upload Gambar"}
+          {value ? "Ganti File" : "Upload File"}
         </button>
         <p className="font-mono text-[10px] text-gray-400">
           → bucket `portofolio`

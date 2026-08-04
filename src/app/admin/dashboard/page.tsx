@@ -52,20 +52,32 @@ async function makeUniqueSlug(
   base: string,
   exceptId?: string,
 ) {
-  const fallback = `${base}-${Date.now().toString(36)}`;
-  const { data, error } = await db
-    .from("projek")
-    .select("id,slug")
-    .ilike("slug", `${base}%`);
-  if (error || !data) return fallback; // kalau query gagal, pakai suffix waktu biar pasti unik
-  const taken = new Set(
-    (data ?? []).filter((r: any) => r.id !== exceptId).map((r: any) => r.slug),
-  );
-  if (!taken.has(base)) return base;
-  let i = 2;
-  while (taken.has(`${base}-${i}`)) i++;
-  return `${base}-${i}`;
+  // Guard: kalau slugify menghasilkan kosong, pakai "project" sebagai fallback
+  const cleanBase = base.trim() || "project";
+  const fallback = `${cleanBase}-${Date.now().toString(36)}`;
+
+  try {
+    const { data, error } = await db
+      .from("projek")
+      .select("id,slug")
+      .ilike("slug", `${cleanBase}%`);
+
+    if (error || !data) return fallback;
+
+    const taken = new Set(
+      data.filter((r: any) => r.id !== exceptId).map((r: any) => r.slug),
+    );
+
+    if (!taken.has(cleanBase)) return cleanBase;
+
+    let i = 2;
+    while (taken.has(`${cleanBase}-${i}`)) i++;
+    return `${cleanBase}-${i}`;
+  } catch {
+    return fallback;
+  }
 }
+
 const fmtDate = (d: any) =>
   d
     ? new Date(d).toLocaleDateString("id-ID", {
@@ -278,20 +290,35 @@ function ProjekForm({
   });
   const [busy, setBusy] = useState(false);
   const set = (k: string, v: any) => setF((p) => ({ ...p, [k]: v }));
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (busy) return; // cegah double-submit
+    if (busy) return;
+
+    if (!f.judul.trim()) {
+      notify("error", "Judul tidak boleh kosong");
+      return;
+    }
+
     setBusy(true);
-    let slug = await makeUniqueSlug(db, slugify(f.judul), initial?.id);
-    const payload = { ...f, tanggal_selesai: f.tanggal_selesai || null, slug };
+
+    const baseSlug = slugify(f.judul);
+    let slug = await makeUniqueSlug(db, baseSlug, initial?.id);
+
+    const payload = {
+      ...f,
+      tanggal_selesai: f.tanggal_selesai || null,
+      slug,
+      judul: f.judul.trim(),
+      deskripsi: f.deskripsi.trim(),
+    };
 
     let res = initial
       ? await db.from("projek").update(payload).eq("id", initial.id)
       : await db.from("projek").insert(payload);
 
-    // Kalau masih kena unique-violation (23505), pakai suffix waktu & coba lagi
     if (res.error && res.error.code === "23505") {
-      slug = `${slugify(f.judul)}-${Date.now().toString(36)}`;
+      slug = `${baseSlug || "project"}-${Date.now().toString(36)}`;
       const p2 = { ...payload, slug };
       res = initial
         ? await db.from("projek").update(p2).eq("id", initial.id)
@@ -299,12 +326,16 @@ function ProjekForm({
     }
 
     setBusy(false);
-    if (res.error) notify("error", res.error.message);
-    else {
+
+    if (res.error) {
+      notify("error", res.error.message);
+      console.error("DB error:", res.error);
+    } else {
       notify("success", `Projek tersimpan (slug: ${slug})`);
       onSaved();
     }
   };
+
   return (
     <form onSubmit={submit} className="space-y-4">
       <Field label="Judul">
@@ -327,6 +358,7 @@ function ProjekForm({
           >
             <option value="Web">Web</option>
             <option value="Mobile">Mobile</option>
+            <option value="Design">Design</option>
           </select>
         </Field>
         <Field label="Tanggal Selesai">
@@ -368,7 +400,8 @@ function ProjekForm({
         disabled={busy}
         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Simpan
+        {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        Simpan
       </button>
     </form>
   );

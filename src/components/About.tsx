@@ -225,7 +225,7 @@ export default function About() {
               <ul className="relative divide-y divide-gray-100 dark:divide-white/5">
                 {quickFactKeys.map((f) => (
                   <li
-                    key={f.label}
+                    key={f.labelKey}
                     className="group/row flex items-center gap-4 py-3.5 transition-colors"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover/row:scale-110 group-hover/row:rotate-6">

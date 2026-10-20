@@ -1,9 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { LanguageProvider } from "@/lib/i18n";
+import ScrollProgress from "@/components/ScrollProgress";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-grotesk",
+  weight: ["500", "600", "700"],
+});
 
 // Ganti dengan URL deploy lu nanti (Vercel) biar OG/absolute URL bener.
 const SITE_URL = "https://gunturlailam-portofolio.vercel.app";
@@ -66,14 +73,19 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased scroll-smooth`}>
+      <body
+        className={`${inter.variable} ${grotesk.variable} font-sans antialiased scroll-smooth`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <LanguageProvider>
+            <ScrollProgress />
+            {children}
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

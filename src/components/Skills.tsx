@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { Code2, Server, Wrench, Sparkles, Layers } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 import type { LucideIcon } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -22,7 +23,7 @@ interface Group {
 
 const GROUPS: Group[] = [
   {
-    title: "Frontend",
+    title: "groupFrontend",
     icon: Code2,
     items: [
       { name: "Next.js", level: 78, brand: "#000000", glyph: "next" },
@@ -35,7 +36,7 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    title: "Backend",
+    title: "groupBackend",
     icon: Server,
     items: [
       { name: "PHP", level: 86, brand: "#777BB4", mono: "PHP" },
@@ -44,7 +45,7 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    title: "Tools & Design",
+    title: "toolsTitle",
     icon: Wrench,
     items: [
       { name: "Git", level: 76, brand: "#F05032", glyph: "git" },
@@ -193,6 +194,7 @@ function TechMark({ skill }: { skill: Skill }) {
 /*  Section                                                           */
 /* ------------------------------------------------------------------ */
 export default function Skills() {
+  const { t } = useLang();
   return (
     <section
       id="skills"
@@ -221,19 +223,17 @@ export default function Skills() {
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-              Keahlian
+              {t("eyebrowSkills")}
             </span>
           </div>
-          <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
-            Tech stack yang saya{" "}
+          <h2 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
+            {t("skillHeadingA")}{" "}
             <span className="bg-[linear-gradient(transparent_58%,rgba(6,182,212,0.30)_58%)] px-1">
-              andalkan
+              {t("skillHeadingB")}
             </span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-            Bukan sekadar daftar — tiap teknologi di bawah punya bobot kemahiran
-            yang saya ukur jujur dari proyek nyata. Dari fondasi PHP & MySQL
-            sampai lapisan modern Next.js.
+            {t("skillIntro")}
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -242,11 +242,11 @@ export default function Skills() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
               </span>
-              Sedang dipelajari: {LEARNING.join(" & ")}
+              {t("learningNow")}: {LEARNING.join(" & ")}
             </span>
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-gray-400">
               <Layers className="h-3.5 w-3.5 text-secondary" />
-              {TOTAL} teknologi · {GROUPS.length} kategori
+              {TOTAL} {t("techCount")} · {GROUPS.length} {t("categoryCount")}
             </span>
           </div>
         </motion.div>
@@ -270,7 +270,7 @@ export default function Skills() {
                   </span>
                   <div>
                     <h3 className="text-lg font-bold tracking-tight">
-                      {group.title}
+                      {t(group.title as never)}
                     </h3>
                     <p className="font-mono text-xs text-gray-400">
                       {group.items.length} stack
@@ -330,7 +330,7 @@ export default function Skills() {
           className="mt-14 flex items-center gap-2 font-mono text-xs text-gray-400"
         >
           <Sparkles className="h-3.5 w-3.5 text-secondary" />
-          Kemahiran diukur dari kontribusi proyek nyata, bukan klaim.
+          {t("skillNote")}
         </motion.p>
       </div>
     </section>

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Layers, RotateCcw, ArrowRight, SearchX } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
 import ProjectCard, { type Projek } from "./ProjectCard";
+import { useLang } from "@/lib/i18n";
 
 export const FALLBACK: Projek[] = [
   {
@@ -84,6 +85,9 @@ export const FALLBACK: Projek[] = [
 const uniqueCats = (rows: Projek[]) =>
   Array.from(new Set(rows.map((r) => r.kategori)));
 
+const catKeyMap: Record<string, "categoryWeb" | "categoryMobile" | "categoryDesign"> =
+  { Web: "categoryWeb", Mobile: "categoryMobile", Design: "categoryDesign" };
+
 interface Props {
   pageSize?: number;
   showViewAll?: boolean;
@@ -97,9 +101,12 @@ export default function ProjectGrid({
   title = "Karya Pilihan",
   subtitle = "Proyek yang saya bangun — dari fondasi backend sampai polesan antarmuka.",
 }: Props) {
+  const { t } = useLang();
+  const trCat = (c: string) => (catKeyMap[c] ? t(catKeyMap[c]) : c);
+  const ALL = t("all");
   const [items, setItems] = useState<Projek[]>([]);
   const [cats, setCats] = useState<string[]>([]);
-  const [active, setActive] = useState("Semua");
+  const [active, setActive] = useState<string>("Semua");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -238,10 +245,10 @@ export default function ProjectGrid({
             <div className="mb-4 flex items-center gap-3">
               <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-                Portofolio
+                {t("eyebrowWork")}
               </span>
             </div>
-            <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
+            <h2 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
               {title.split(" ").slice(0, -1).join(" ")}{" "}
               <span className="italic text-gray-400 dark:text-gray-500">
                 {title.split(" ").slice(-1)}
@@ -282,7 +289,7 @@ export default function ProjectGrid({
                   <span
                     className={`relative z-10 ${isActive ? "text-white" : "text-gray-600 hover:text-foreground dark:text-gray-300"}`}
                   >
-                    {c}
+                    {c === "Semua" ? ALL : trCat(c)}
                   </span>
                 </button>
               );
@@ -293,7 +300,9 @@ export default function ProjectGrid({
         {/* counter */}
         <div className="mb-6 flex items-center gap-2 font-mono text-xs text-gray-400">
           <Layers className="h-3.5 w-3.5 text-secondary" />
-          {loading ? "memuat…" : `${items.length} proyek ditampilkan`}
+          {loading
+            ? t("loading")
+            : `${items.length} ${t("shownCount")}`}
         </div>
 
         {/* SKELETON */}
@@ -326,17 +335,17 @@ export default function ProjectGrid({
               <SearchX className="h-7 w-7" />
             </span>
             <p className="text-lg font-semibold text-foreground">
-              Belum ada proyek di kategori ini
+              {t("noProjects")}
             </p>
             <p className="mt-1.5 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              Coba pilih kategori lain, atau muat ulang daftar proyek.
+              {t("emptyHint")}
             </p>
             <button
               onClick={() => setActive("Semua")}
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5"
             >
               <RotateCcw className="h-4 w-4" />
-              Reset Filter
+              {t("resetFilter")}
             </button>
           </motion.div>
         )}
@@ -361,11 +370,11 @@ export default function ProjectGrid({
                   {loadingMore ? (
                     <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      Memuat…
+                      {t("loading")}
                     </>
                   ) : (
                     <>
-                      Muat Lainnya
+                      {t("loadMore")}
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
@@ -387,7 +396,7 @@ export default function ProjectGrid({
               href="/projek"
               className="group inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-secondary"
             >
-              Lihat Semua Projek
+              {t("viewAll")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5" />
             </Link>
           </motion.div>

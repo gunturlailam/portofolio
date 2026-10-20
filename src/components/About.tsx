@@ -10,6 +10,7 @@ import {
   Target,
 } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
+import { useLang, Tts } from "@/lib/i18n";
 
 interface Pendidikan {
   id: string;
@@ -51,12 +52,13 @@ const FALLBACK_PENDIDIKAN: Pendidikan[] = [
   },
 ];
 
-const quickFacts = [
-  { icon: MapPin, label: "Berbasis di", value: "Padang, Indonesia" },
-  { icon: GraduationCap, label: "Status", value: "Mahasiswa · Jayanusa '23" },
-  { icon: BookOpen, label: "Jurusan", value: "Sistem Informasi" },
-  { icon: Target, label: "Minat", value: "Web Development" },
-];
+// label & value memakai key kamus (diterjemahkan via t())
+const quickFactKeys = [
+  { icon: MapPin, labelKey: "factBased", value: "Padang, Indonesia" },
+  { icon: GraduationCap, labelKey: "factStatus", valueKey: "factStatusVal" },
+  { icon: BookOpen, labelKey: "factMajor", valueKey: "factMajorVal" },
+  { icon: Target, labelKey: "factInterest", valueKey: "factInterestVal" },
+] as const;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -77,6 +79,7 @@ const fadeUp = {
 };
 
 export default function About() {
+  const { t } = useLang();
   const [data, setData] = useState<Pendidikan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -130,7 +133,7 @@ export default function About() {
             >
               <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-                Tentang Saya
+                {t("eyebrowAbout")}
               </span>
             </motion.div>
 
@@ -139,10 +142,10 @@ export default function About() {
               custom={1}
               className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl"
             >
-              Ngoding, ngopi,
+              <Tts id="Ngoding, ngopi," en="Code, coffee," />
               <br className="hidden sm:block" />{" "}
-              <span className="font-light italic text-gray-400 dark:text-gray-500">
-                dan terus belajar.
+              <span className="text-gradient font-light italic">
+                <Tts id="dan terus belajar." en="and never stop learning." />
               </span>
             </motion.h2>
 
@@ -152,23 +155,39 @@ export default function About() {
               className="mt-7 space-y-5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400"
             >
               <p className="border-l-2 border-primary/40 pl-5">
-                Halo, saya{" "}
-                <span className="font-semibold text-foreground">
-                  Guntur Lailam Yuro
-                </span>{" "}
-                — mahasiswa Sistem Informasi Universitas Jayanusa angkatan 2023,
-                asli Padang. Mulai ngoding karena iseng, sekarang malah jadi hal
-                yang paling saya suka.
+                <Tts
+                  id={
+                    <>
+                      Halo, saya{" "}
+                      <span className="font-semibold text-foreground">
+                        Guntur Lailam Yuro
+                      </span>{" "}
+                      — mahasiswa Sistem Informasi Universitas Jayanusa angkatan
+                      2023, asli Padang. Mulai ngoding karena iseng, sekarang
+                      malah jadi hal yang paling saya suka.
+                    </>
+                  }
+                  en={
+                    <>
+                      Hi, I’m{" "}
+                      <span className="font-semibold text-foreground">
+                        Guntur Lailam Yuro
+                      </span>{" "}
+                      — a 2023 Information Systems student at Jayanusa
+                      University, originally from Padang. I started coding out
+                      of curiosity, and it turned into the thing I love most.
+                    </>
+                  }
+                />
               </p>
-              <p>
-                Fokus saya di web development: PHP & MySQL untuk backend,
-                Next.js dan Tailwind untuk frontend. Saya lebih suka kode yang
-                sederhana dan gampang dibaca daripada yang kelihatan canggih.
-              </p>
-              <p>
-                Di luar ngoding, saya aktif di organisasi, dan selalu penasaran
-                sama cara teknologi nyelesain masalah sehari-hari.
-              </p>
+              <Tts
+                id="Fokus saya di web development: PHP & MySQL untuk backend, Next.js dan Tailwind untuk frontend. Saya lebih suka kode yang sederhana dan gampang dibaca daripada yang kelihatan canggih."
+                en="My focus is web development: PHP & MySQL on the backend, Next.js and Tailwind on the frontend. I prefer simple, readable code over anything that just looks fancy."
+              />
+              <Tts
+                id="Di luar ngoding, saya aktif di organisasi, dan selalu penasaran sama cara teknologi nyelesain masalah sehari-hari."
+                en="Outside of coding, I’m active in organizations and always curious about how technology solves everyday problems."
+              />
             </motion.div>
           </motion.div>
 
@@ -188,23 +207,23 @@ export default function About() {
               ],
             }}
           >
-            <div className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white/70 p-7 shadow-sm backdrop-blur transition-shadow duration-500 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="card-spotlight group relative overflow-hidden rounded-3xl border border-gray-200 bg-white/70 p-7 shadow-sm backdrop-blur transition-shadow duration-500 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03]">
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl transition-transform duration-700 group-hover:scale-150" />
               <div className="relative mb-6 flex items-center justify-between">
                 <span className="font-mono text-xs uppercase tracking-widest text-gray-400">
-                  Profil Singkat
+                  {t("quickFacts")}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 text-[11px] font-semibold text-green-600 dark:text-green-400">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
                   </span>
-                  Aktif
+                  {t("activeNow")}
                 </span>
               </div>
 
               <ul className="relative divide-y divide-gray-100 dark:divide-white/5">
-                {quickFacts.map((f) => (
+                {quickFactKeys.map((f) => (
                   <li
                     key={f.label}
                     className="group/row flex items-center gap-4 py-3.5 transition-colors"
@@ -214,10 +233,10 @@ export default function About() {
                     </span>
                     <div className="min-w-0">
                       <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400">
-                        {f.label}
+                        {"labelKey" in f ? t(f.labelKey as never) : ""}
                       </p>
                       <p className="truncate text-sm font-semibold text-foreground">
-                        {f.value}
+                        {"valueKey" in f && f.valueKey ? t(f.valueKey as never) : f.value ?? ""}
                       </p>
                     </div>
                   </li>
@@ -240,11 +259,11 @@ export default function About() {
             custom={0}
             className="mb-8 flex items-end justify-between gap-4"
           >
-            <h3 className="text-2xl font-bold tracking-tight md:text-3xl">
-              Perjalanan Pendidikan
+            <h3 className="font-display text-2xl font-bold tracking-tight md:text-3xl">
+              {t("eduTitle")}
             </h3>
             <span className="hidden font-mono text-xs text-gray-400 sm:block">
-              {data.length} tahap
+              {data.length} {t("stages")}
             </span>
           </motion.div>
 

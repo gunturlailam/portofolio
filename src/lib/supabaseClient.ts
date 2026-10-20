@@ -35,7 +35,15 @@ export const envDebug = {
 const emptyChain: any = new Proxy(function () {}, {
   get(_target, prop) {
     if (prop === "then")
-      return (resolve: any) =>
+      return (
+        resolve: (v: {
+          data: unknown[];
+          error: null;
+          count: null;
+          status: number;
+          statusText: string;
+        }) => void,
+      ) =>
         resolve({
           data: [],
           error: null,

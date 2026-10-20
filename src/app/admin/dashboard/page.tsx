@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -930,8 +931,9 @@ export default function DashboardPage() {
     type: ToastType;
     message: string;
   } | null>(null);
+  const toastSeq = useRef(0);
   const notify: Notify = (type, message) =>
-    setToast({ id: Date.now(), type, message });
+    setToast({ id: ++toastSeq.current, type, message });
 
   useEffect(() => {
     db?.auth.getUser().then(({ data }) => setUser(data.user?.email ?? ""));
@@ -951,7 +953,8 @@ export default function DashboardPage() {
     setLoading(false);
   };
   useEffect(() => {
-    load(); /* eslint-disable-next-line */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
   }, [tab, db]);
 
   const remove = async (id: string) => {
@@ -1150,7 +1153,7 @@ export default function DashboardPage() {
                 ))}
               {!loading && rows.length === 0 && (
                 <div className="rounded-3xl border border-dashed border-gray-300 py-16 text-center text-sm text-gray-400 dark:border-white/10">
-                  Belum ada data. Klik "Tambah".
+                  Belum ada data. Klik “Tambah”.
                 </div>
               )}
               {!loading &&

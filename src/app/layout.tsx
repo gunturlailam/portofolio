@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 // Ganti dengan URL deploy lu nanti (Vercel) biar OG/absolute URL bener.
-const SITE_URL = "https://portofolio-guntur.vercel.app";
+const SITE_URL = "https://gunturlailam-portofolio.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -29,7 +29,6 @@ export const metadata: Metadata = {
     "Sistem Informasi",
   ],
   robots: { index: true, follow: true },
-  themeColor: "#8B5CF6",
   openGraph: {
     type: "website",
     locale: "id_ID",
@@ -56,6 +55,10 @@ export const metadata: Metadata = {
       "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&q=80&w=1200",
     ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#8B5CF6",
 };
 
 export default function RootLayout({

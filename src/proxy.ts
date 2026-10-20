@@ -6,15 +6,15 @@ const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const loginPath = "/admin/login";
   const dashboardPath = "/admin/dashboard";
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
   const key =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim() ||
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "").trim();
   const envReady =
     !!url &&
     !!key &&

@@ -13,13 +13,10 @@ import {
 } from "lucide-react";
 import { envReady, supabaseUrl, supabaseKey } from "@/lib/supabaseClient";
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
-  .split(",")
-  .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
-const isAllowedEmail = (email: string) =>
-  ADMIN_EMAILS.length === 0 ||
-  ADMIN_EMAILS.includes(email.trim().toLowerCase());
+// NOTE: daftar email admin TIDAK boleh dievaluasi di sini (halaman publik)
+// karena NEXT_PUBLIC_* ikut ter-bundle ke JS klien dan bocor ke siapa pun.
+// Otorisasi admin sepenuhnya dilakukan server-side oleh src/proxy.ts;
+// kalau ditolak, proxy me-redirect ke halaman ini dengan ?denied=1.
 
 const GoogleG = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
@@ -65,13 +62,8 @@ function LoginForm() {
     if (!supabase) return;
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
-      const uEmail = data.session.user?.email ?? "";
-      if (denied || !isAllowedEmail(uEmail)) {
-        await supabase.auth.signOut();
-        setError("Email ini tidak diizinkan mengakses admin.");
-      } else {
-        router.replace("/admin/dashboard");
-      }
+      if (denied) return; // sudah diketahui ditolak server
+      router.replace("/admin/dashboard");
     });
   }, [supabase, router, denied]);
 
@@ -89,12 +81,8 @@ function LoginForm() {
       setLoading("none");
       return;
     }
-    if (!isAllowedEmail(data.user?.email ?? email)) {
-      await supabase.auth.signOut();
-      setError("Email ini tidak terdaftar sebagai admin.");
-      setLoading("none");
-      return;
-    }
+    // Proxy akan memverifikasi allowlist di server; jika bukan admin,
+    // ia redirect balik ke login?denied=1 dan efek di bawah menampilkan pesannya.
     router.push("/admin/dashboard");
     router.refresh();
   };

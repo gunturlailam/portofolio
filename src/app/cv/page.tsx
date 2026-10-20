@@ -55,6 +55,7 @@ const fmtBT = (d?: string | null) => {
 const range = (a?: string | null, b?: string | null) =>
   `${fmtBT(a)} – ${b ? fmtBT(b) : "Sekarang"}`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 
 function Section({

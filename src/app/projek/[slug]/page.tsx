@@ -120,11 +120,11 @@ export default function ProjekDetailPage() {
           className="mb-10 flex items-center gap-2 font-mono text-xs text-gray-400"
         >
           <Link
-            href="/projek"
+            href="/"
             className="group inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1.5 transition-colors hover:border-primary/50 hover:text-primary dark:border-white/10"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Semua Proyek
+            Beranda
           </Link>
           <span>/</span>
           <span className="truncate text-foreground">
@@ -160,11 +160,11 @@ export default function ProjekDetailPage() {
               tidak ada di database. Mungkin sudah dihapus atau tautannya salah.
             </p>
             <Link
-              href="/projek"
+              href="/"
               className="mt-7 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5"
             >
               <ArrowLeft className="h-4 w-4" />
-              Kembali ke Semua Proyek
+              Kembali ke Beranda
             </Link>
           </motion.div>
         )}

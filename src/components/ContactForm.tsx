@@ -3,22 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MessageCircle, MapPin, Send, Loader2 } from "lucide-react";
 import Toast, { type ToastType } from "./Toast";
-
-const infoRows = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "gunturlailamyuro8@gmail.com",
-    href: "mailto:gunturlailamyuro8@gmail.com",
-  },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: "+62 895-6025-7246-6",
-    href: "https://wa.me/62895602572476",
-  },
-  { icon: MapPin, label: "Lokasi", value: "Padang, Indonesia", href: null },
-];
+import { useTranslations } from 'next-intl';
 
 interface ToastState {
   id: number;
@@ -27,6 +12,24 @@ interface ToastState {
 }
 
 export default function ContactForm() {
+  const t = useTranslations('contact');
+
+  const infoRows = [
+    {
+      icon: Mail,
+      label: t('email'),
+      value: "gunturlailamyuro8@gmail.com",
+      href: "mailto:gunturlailamyuro8@gmail.com",
+    },
+    {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: "+62 895-6025-7246-6",
+      href: "https://wa.me/62895602572476",
+    },
+    { icon: MapPin, label: t('location'), value: "Padang, Indonesia", href: null },
+  ];
+
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [pesan, setPesan] = useState("");
@@ -41,11 +44,11 @@ export default function ContactForm() {
 
     // validasi client-side
     if (!nama.trim() || !pesan.trim()) {
-      showToast("error", "Nama dan pesan wajib diisi dulu ya.");
+      showToast("error", t('validationError'));
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast("error", "Format email belum benar. Cek lagi penulisanmu.");
+      showToast("error", t('emailError'));
       return;
     }
 
@@ -61,7 +64,7 @@ export default function ContactForm() {
       if (res.ok && json.ok) {
         showToast(
           "success",
-          json.message ?? "Pesan terkirim! Aku bakal segera balas.",
+          json.message ?? t('success'),
         );
         setNama("");
         setEmail("");
@@ -69,13 +72,13 @@ export default function ContactForm() {
       } else {
         showToast(
           "error",
-          json.message ?? "Terjadi kesalahan. Coba beberapa saat lagi.",
+          json.message ?? t('error'),
         );
       }
     } catch {
       showToast(
         "error",
-        "Jaringan bermasalah. Pastikan server berjalan & coba lagi.",
+        t('networkError'),
       );
     } finally {
       setSubmitting(false);
@@ -109,19 +112,18 @@ export default function ContactForm() {
           <div className="mb-4 flex items-center gap-3">
             <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-              Kontak
+              {t('title')}
             </span>
           </div>
           <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
-            Punya ide? <br />
+            {t('heading')} <br />
             <span className="italic text-gray-400 dark:text-gray-500">
-              Mari wujudkan
+              {t('headingItalic')}
             </span>{" "}
-            bersama.
+            {t('headingEnd')}
           </h2>
           <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-            Terbuka untuk proyek freelance, kolaborasi, magang, atau sekadar
-            ngobrol soal teknologi. Pesanmu masuk langsung ke database-ku.
+            {t('subtitle')}
           </p>
 
           <ul className="mt-9 space-y-3">
@@ -180,14 +182,14 @@ export default function ContactForm() {
                 htmlFor="nama"
                 className="mb-2 block text-sm font-semibold text-foreground"
               >
-                Nama
+                {t('name')}
               </label>
               <input
                 id="nama"
                 type="text"
                 value={nama}
                 onChange={(e) => setNama(e.target.value)}
-                placeholder="Nama kamu"
+                placeholder={t('namePlaceholder')}
                 className={inputCls}
               />
             </div>
@@ -196,14 +198,14 @@ export default function ContactForm() {
                 htmlFor="email"
                 className="mb-2 block text-sm font-semibold text-foreground"
               >
-                Email
+                {t('email')}
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
+                placeholder={t('emailPlaceholder')}
                 className={inputCls}
               />
             </div>
@@ -214,14 +216,14 @@ export default function ContactForm() {
               htmlFor="pesan"
               className="mb-2 block text-sm font-semibold text-foreground"
             >
-              Pesan
+              {t('message')}
             </label>
             <textarea
               id="pesan"
               rows={6}
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
-              placeholder="Ceritakan proyek atau ide kamu…"
+              placeholder={t('messagePlaceholder')}
               className={`${inputCls} resize-none`}
             />
           </div>
@@ -234,12 +236,12 @@ export default function ContactForm() {
             {submitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Mengirim…
+                {t('sending')}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                Kirim Pesan
+                {t('send')}
               </>
             )}
           </button>

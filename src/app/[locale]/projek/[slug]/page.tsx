@@ -15,6 +15,7 @@ import {
 import { supabase, envReady } from "@/lib/supabaseClient";
 import { FALLBACK } from "@/components/ProjectGrid";
 import { CAT_STYLE, type Projek } from "@/components/ProjectCard";
+import { useTranslations, useLocale } from 'next-intl';
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg
@@ -36,9 +37,9 @@ const catOf = (k: string) =>
     glow: "",
   };
 
-const fmtDate = (d: string | null) =>
+const fmtDate = (d: string | null, locale: string) =>
   d
-    ? new Date(d).toLocaleDateString("id-ID", {
+    ? new Date(d).toLocaleDateString(locale === 'id' ? "id-ID" : "en-US", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -48,6 +49,8 @@ const fmtDate = (d: string | null) =>
 export default function ProjekDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
+  const locale = useLocale();
+  const t = useTranslations('projects.detail');
 
   const [projek, setProjek] = useState<Projek | null>(null);
   const [list, setList] = useState<Projek[]>([]);
@@ -124,7 +127,7 @@ export default function ProjekDetailPage() {
             className="group inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1.5 transition-colors hover:border-primary/50 hover:text-primary dark:border-white/10"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Beranda
+            {t('backToHome')}
           </Link>
           <span>/</span>
           <span className="truncate text-foreground">
@@ -151,20 +154,16 @@ export default function ProjekDetailPage() {
             <span className="font-mono text-6xl font-black text-gray-200 dark:text-white/10">
               404
             </span>
-            <p className="mt-4 text-lg font-semibold">Proyek tidak ditemukan</p>
+            <p className="mt-4 text-lg font-semibold">{t('notFound')}</p>
             <p className="mt-1.5 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              Slug{" "}
-              <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs dark:bg-white/10">
-                {slug}
-              </code>{" "}
-              tidak ada di database. Mungkin sudah dihapus atau tautannya salah.
+              {t('notFoundHint', { slug })}
             </p>
             <Link
               href="/"
               className="mt-7 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5"
             >
               <ArrowLeft className="h-4 w-4" />
-              Kembali ke Beranda
+              {t('backToHome')}
             </Link>
           </motion.div>
         )}
@@ -191,7 +190,7 @@ export default function ProjekDetailPage() {
               <div className="mt-5 flex flex-wrap items-center gap-5 font-mono text-xs text-gray-400">
                 <span className="inline-flex items-center gap-1.5">
                   <CalendarDays className="h-3.5 w-3.5" />
-                  {fmtDate(projek.tanggal_selesai)}
+                  {fmtDate(projek.tanggal_selesai, locale)}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <Link2 className="h-3.5 w-3.5" />
@@ -238,7 +237,7 @@ export default function ProjekDetailPage() {
                 className="lg:col-span-2"
               >
                 <h2 className="mb-5 text-2xl font-bold tracking-tight">
-                  Tentang Proyek Ini
+                  {t('title')}
                 </h2>
                 <div className="space-y-5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
                   {projek.deskripsi
@@ -266,7 +265,7 @@ export default function ProjekDetailPage() {
                     className="group mt-9 inline-flex items-center gap-2.5 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl dark:bg-white dark:text-gray-900"
                   >
                     <GithubIcon className="h-4 w-4" />
-                    Lihat Source Code
+                    {t('viewSource')}
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                 )}
@@ -283,12 +282,12 @@ export default function ProjekDetailPage() {
                 <div className="rounded-3xl border border-gray-200/70 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/[0.03]">
                   <h3 className="mb-5 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-gray-400">
                     <Tags className="h-3.5 w-3.5 text-secondary" />
-                    Detail Proyek
+                    {t('category')}
                   </h3>
                   <dl className="space-y-4 text-sm">
                     <div className="flex items-center justify-between gap-4">
                       <dt className="text-gray-500 dark:text-gray-400">
-                        Kategori
+                        {t('category')}
                       </dt>
                       <dd className={`font-semibold ${c.text}`}>
                         {projek.kategori}
@@ -296,14 +295,14 @@ export default function ProjekDetailPage() {
                     </div>
                     <div className="flex items-center justify-between gap-4">
                       <dt className="text-gray-500 dark:text-gray-400">
-                        Selesai
+                        {t('finished')}
                       </dt>
                       <dd className="font-semibold text-foreground">
-                        {fmtDate(projek.tanggal_selesai)}
+                        {fmtDate(projek.tanggal_selesai, locale)}
                       </dd>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <dt className="text-gray-500 dark:text-gray-400">Repo</dt>
+                      <dt className="text-gray-500 dark:text-gray-400">{t('repo')}</dt>
                       <dd className="font-semibold text-foreground">
                         {projek.link_github ? (
                           <a
@@ -312,10 +311,10 @@ export default function ProjekDetailPage() {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 hover:text-primary"
                           >
-                            <GithubIcon className="h-3.5 w-3.5" /> GitHub
+                            <GithubIcon className="h-3.5 w-3.5" /> {t('github')}
                           </a>
                         ) : (
-                          "Privat"
+                          t('private')
                         )}
                       </dd>
                     </div>
@@ -325,7 +324,7 @@ export default function ProjekDetailPage() {
                     <div className="mt-7 border-t border-gray-100 pt-6 dark:border-white/5">
                       <h3 className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-gray-400">
                         <Layers className="h-3.5 w-3.5 text-secondary" />
-                        Proyek Lain
+                        {t('otherProjects')}
                       </h3>
                       <ul className="space-y-2.5">
                         {related.map((r) => (
@@ -367,7 +366,7 @@ export default function ProjekDetailPage() {
                   <ArrowLeft className="h-5 w-5 shrink-0 text-gray-400 transition-transform group-hover:-translate-x-1 group-hover:text-primary" />
                   <div className="min-w-0">
                     <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400">
-                      Sebelumnya
+                      {t('previous')}
                     </p>
                     <p className="truncate text-sm font-semibold text-foreground">
                       {prev.judul}
@@ -384,7 +383,7 @@ export default function ProjekDetailPage() {
                 >
                   <div className="min-w-0">
                     <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400">
-                      Selanjutnya
+                      {t('next')}
                     </p>
                     <p className="truncate text-sm font-semibold text-foreground">
                       {next.judul}

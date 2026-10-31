@@ -10,6 +10,7 @@ import {
   Target,
 } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
+import { useTranslations } from 'next-intl';
 
 interface Pendidikan {
   id: string;
@@ -51,13 +52,6 @@ const FALLBACK_PENDIDIKAN: Pendidikan[] = [
   },
 ];
 
-const quickFacts = [
-  { icon: MapPin, label: "Berbasis di", value: "Padang, Indonesia" },
-  { icon: GraduationCap, label: "Status", value: "Mahasiswa · Jayanusa '23" },
-  { icon: BookOpen, label: "Jurusan", value: "Sistem Informasi" },
-  { icon: Target, label: "Minat", value: "Web Development" },
-];
-
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   show: (i: number) => ({
@@ -77,6 +71,15 @@ const fadeUp = {
 };
 
 export default function About() {
+  const t = useTranslations('about');
+
+  const quickFacts = [
+    { icon: MapPin, label: t('based'), value: "Padang, Indonesia" },
+    { icon: GraduationCap, label: t('status'), value: "Mahasiswa · Jayanusa '23" },
+    { icon: BookOpen, label: t('major'), value: "Sistem Informasi" },
+    { icon: Target, label: t('interest'), value: "Web Development" },
+  ];
+
   const [data, setData] = useState<Pendidikan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -130,7 +133,7 @@ export default function About() {
             >
               <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-                Tentang Saya
+                {t('title')}
               </span>
             </motion.div>
 
@@ -139,10 +142,10 @@ export default function About() {
               custom={1}
               className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl"
             >
-              Ngoding, ngopi,
+              {t('heading')}
               <br className="hidden sm:block" />{" "}
               <span className="font-light italic text-gray-400 dark:text-gray-500">
-                dan terus belajar.
+                {t('headingItalic')}
               </span>
             </motion.h2>
 
@@ -152,22 +155,13 @@ export default function About() {
               className="mt-7 space-y-5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400"
             >
               <p className="border-l-2 border-primary/40 pl-5">
-                Halo, saya{" "}
-                <span className="font-semibold text-foreground">
-                  Guntur Lailam Yuro
-                </span>{" "}
-                — mahasiswa Sistem Informasi Universitas Jayanusa angkatan 2023,
-                asli Padang. Mulai ngoding karena iseng, sekarang malah jadi hal
-                yang paling saya suka.
+                {t('intro')}
               </p>
               <p>
-                Fokus saya di web development: PHP & MySQL untuk backend,
-                Next.js dan Tailwind untuk frontend. Saya lebih suka kode yang
-                sederhana dan gampang dibaca daripada yang kelihatan canggih.
+                {t('focus')}
               </p>
               <p>
-                Di luar ngoding, saya aktif di organisasi, dan selalu penasaran
-                sama cara teknologi nyelesain masalah sehari-hari.
+                {t('outside')}
               </p>
             </motion.div>
           </motion.div>
@@ -192,14 +186,14 @@ export default function About() {
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl transition-transform duration-700 group-hover:scale-150" />
               <div className="relative mb-6 flex items-center justify-between">
                 <span className="font-mono text-xs uppercase tracking-widest text-gray-400">
-                  Profil Singkat
+                  {t('profile')}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 text-[11px] font-semibold text-green-600 dark:text-green-400">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
                   </span>
-                  Aktif
+                  {t('active')}
                 </span>
               </div>
 
@@ -241,10 +235,10 @@ export default function About() {
             className="mb-8 flex items-end justify-between gap-4"
           >
             <h3 className="text-2xl font-bold tracking-tight md:text-3xl">
-              Perjalanan Pendidikan
+              {t('educationJourney')}
             </h3>
             <span className="hidden font-mono text-xs text-gray-400 sm:block">
-              {data.length} tahap
+              {t('stages', { count: data.length })}
             </span>
           </motion.div>
 

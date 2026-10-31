@@ -4,21 +4,24 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import Link from "next/link";
-
-const menus = [
-  { label: "Tentang", href: "#about" },
-  { label: "Pendidikan", href: "#education" },
-  { label: "Pengalaman", href: "#experience" },
-  { label: "Projek", href: "#work" },
-  { label: "Sertifikat", href: "#certificates" },
-  { label: "Kontak", href: "#contact" },
-];
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
+  const t = useTranslations('nav');
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const menus = [
+    { label: t('about'), href: "#about" },
+    { label: t('education'), href: "#education" },
+    { label: t('experience'), href: "#experience" },
+    { label: t('projects'), href: "#work" },
+    { label: t('certificates'), href: "#certificates" },
+    { label: t('contact'), href: "#contact" },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -70,6 +73,7 @@ export default function Navbar() {
                 <Moon className="h-4 w-4" />
               ))}
           </button>
+          <LanguageSwitcher />
         </div>
 
         {/* Mobile toggle */}
@@ -86,6 +90,7 @@ export default function Navbar() {
                 <Moon className="h-4 w-4" />
               ))}
           </button>
+          <LanguageSwitcher />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"

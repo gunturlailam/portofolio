@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Users } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
+import { useTranslations, useLocale } from 'next-intl';
 
 interface Pengalaman {
   id: string;
@@ -34,11 +35,11 @@ const FALLBACK_PENGALAMAN: Pengalaman[] = [
   },
 ];
 
-const fmtDateSafe = (d: string | null) => {
-  if (!d) return "Sekarang";
+const fmtDateSafe = (d: string | null, locale: string) => {
+  if (!d) return locale === 'id' ? "Sekarang" : "Now";
   const parts = d.split("-");
   if (parts.length !== 3) return d;
-  const months = [
+  const monthsId = [
     "Januari",
     "Februari",
     "Maret",
@@ -52,10 +53,27 @@ const fmtDateSafe = (d: string | null) => {
     "November",
     "Desember",
   ];
+  const monthsEn = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const months = locale === 'id' ? monthsId : monthsEn;
   return `${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
 };
 
 export default function Timeline() {
+  const t = useTranslations('timeline');
+  const locale = useLocale();
   const [data, setData] = useState<Pengalaman[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,13 +127,13 @@ export default function Timeline() {
           <div className="mb-4 flex items-center justify-center gap-3">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-primary" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-              Rekam Jejak
+              {t('title')}
             </span>
             <span className="h-px w-8 bg-gradient-to-l from-transparent to-secondary" />
           </div>
           <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">
-            Pengalaman &{" "}
-            <span className="text-gray-400 dark:text-gray-500">Organisasi</span>
+            {t('heading')}{" "}
+            <span className="text-gray-400 dark:text-gray-500">{t('headingEnd')}</span>
           </h2>
         </motion.div>
 
@@ -127,7 +145,7 @@ export default function Timeline() {
 
           {!loading && data.length === 0 && (
             <p className="rounded-2xl border border-dashed border-gray-300 py-14 text-center text-sm text-gray-400 dark:border-white/10">
-              Belum ada pengalaman — tambahkan lewat Dashboard Admin.
+              {t('noExperience')}
             </p>
           )}
 
@@ -175,8 +193,8 @@ export default function Timeline() {
                           {item.tipe}
                         </span>
                         <span className="font-mono text-xs text-gray-400">
-                          {fmtDateSafe(item.tanggal_mulai)} —{" "}
-                          {fmtDateSafe(item.tanggal_selesai)}
+                          {fmtDateSafe(item.tanggal_mulai, locale)} —{" "}
+                          {fmtDateSafe(item.tanggal_selesai, locale)}
                         </span>
                       </div>
                       <h3 className="text-lg font-bold text-foreground">

@@ -3,14 +3,17 @@ import { motion } from "framer-motion";
 import { Download, ArrowRight, Code2, Palette } from "lucide-react";
 import SocialIcons from "./SocialIcons";
 import Link from "next/link";
-
-const stats = [
-  { value: "2+", label: "Tahun Belajar" },
-  { value: "15+", label: "Proyek Selesai" },
-  { value: "6", label: "Teknologi Dikuasai" },
-];
+import { useTranslations } from 'next-intl';
 
 export default function Hero() {
+  const t = useTranslations('hero');
+
+  const stats = [
+    { value: "2+", label: t('yearsLearning', { defaultValue: "2+ Years Learning" }) },
+    { value: "15+", label: t('projectsCompleted', { defaultValue: "15+ Projects Completed" }) },
+    { value: "6", label: t('techMastered', { defaultValue: "6 Technologies Mastered" }) },
+  ];
+
   return (
     <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
       {/* Ambient background: grid + glow orbs */}
@@ -33,7 +36,7 @@ export default function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            Tersedia untuk proyek freelance
+            {t('available')}
           </motion.div>
 
           <motion.p
@@ -42,7 +45,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-2 text-sm font-semibold uppercase tracking-[0.25em] text-secondary"
           >
-            Halo, saya
+            {t('greeting')}
           </motion.p>
 
           <motion.h1
@@ -64,7 +67,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-200"
           >
-            Web Developer
+            {t('role')}
           </motion.p>
 
           <motion.p
@@ -73,9 +76,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-4 max-w-md leading-relaxed text-gray-500 dark:text-gray-400"
           >
-            Mahasiswa Sistem Informasi Universitas Jayanusa yang senang mengubah
-            ide jadi website yang nyaman dipakai. Sehari-hari berkutat dengan
-            PHP, MySQL, dan ekosistem JavaScript modern.
+            {t('description')}
           </motion.p>
 
           {/* CTA */}
@@ -90,13 +91,13 @@ export default function Hero() {
               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
             >
               <Download className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
-              Lihat CV / Resume
+              {t('cv')}
             </Link>
             <a
               href="#contact"
               className="group inline-flex items-center gap-2 rounded-full border border-gray-300 px-7 py-3.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary hover:text-primary dark:border-white/20 dark:text-gray-200 dark:hover:border-primary dark:hover:text-primary"
             >
-              Hubungi Saya
+              {t('contact')}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
           </motion.div>

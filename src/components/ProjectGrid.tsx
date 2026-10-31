@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Layers, RotateCcw, ArrowRight, SearchX } from "lucide-react";
 import { supabase, envReady } from "@/lib/supabaseClient";
 import ProjectCard, { type Projek } from "./ProjectCard";
+import { useTranslations } from 'next-intl';
 
 export const FALLBACK: Projek[] = [
   {
@@ -94,9 +95,12 @@ interface Props {
 export default function ProjectGrid({
   pageSize = 6,
   showViewAll = true,
-  title = "Karya Pilihan",
-  subtitle = "Proyek yang saya bangun — dari fondasi backend sampai polesan antarmuka.",
+  title,
+  subtitle,
 }: Props) {
+  const t = useTranslations('projects');
+  const displayTitle = title || t('title');
+  const displaySubtitle = subtitle || t('subtitle');
   const [items, setItems] = useState<Projek[]>([]);
   const [cats, setCats] = useState<string[]>([]);
   const [active, setActive] = useState("Semua");
@@ -242,13 +246,13 @@ export default function ProjectGrid({
               </span>
             </div>
             <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
-              {title.split(" ").slice(0, -1).join(" ")}{" "}
+              {displayTitle.split(" ").slice(0, -1).join(" ")}{" "}
               <span className="italic text-gray-400 dark:text-gray-500">
-                {title.split(" ").slice(-1)}
+                {displayTitle.split(" ").slice(-1)}
               </span>
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-              {subtitle}
+              {displaySubtitle}
             </p>
           </motion.div>
 
@@ -293,7 +297,7 @@ export default function ProjectGrid({
         {/* counter */}
         <div className="mb-6 flex items-center gap-2 font-mono text-xs text-gray-400">
           <Layers className="h-3.5 w-3.5 text-secondary" />
-          {loading ? "memuat…" : `${items.length} proyek ditampilkan`}
+          {loading ? t('loading') : t('counter', { count: items.length })}
         </div>
 
         {/* SKELETON */}
@@ -326,17 +330,17 @@ export default function ProjectGrid({
               <SearchX className="h-7 w-7" />
             </span>
             <p className="text-lg font-semibold text-foreground">
-              Belum ada proyek di kategori ini
+              {t('empty')}
             </p>
             <p className="mt-1.5 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              Coba pilih kategori lain, atau muat ulang daftar proyek.
+              {t('emptyHint')}
             </p>
             <button
               onClick={() => setActive("Semua")}
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5"
             >
               <RotateCcw className="h-4 w-4" />
-              Reset Filter
+              {t('resetFilter')}
             </button>
           </motion.div>
         )}
@@ -361,11 +365,11 @@ export default function ProjectGrid({
                   {loadingMore ? (
                     <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      Memuat…
+                      {t('loading')}
                     </>
                   ) : (
                     <>
-                      Muat Lainnya
+                      {t('loadMore')}
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
@@ -387,7 +391,7 @@ export default function ProjectGrid({
               href="/projek"
               className="group inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-secondary"
             >
-              Lihat Semua Projek
+              {t('viewAll')}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5" />
             </Link>
           </motion.div>

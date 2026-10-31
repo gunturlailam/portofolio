@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Code2, Server, Wrench, Sparkles, Layers } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                              */
@@ -193,6 +194,8 @@ function TechMark({ skill }: { skill: Skill }) {
 /*  Section                                                           */
 /* ------------------------------------------------------------------ */
 export default function Skills() {
+  const t = useTranslations('skills');
+
   return (
     <section
       id="skills"
@@ -221,19 +224,17 @@ export default function Skills() {
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-10 bg-gradient-to-r from-primary to-secondary" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-              Keahlian
+              {t('title')}
             </span>
           </div>
           <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl">
-            Tech stack yang saya{" "}
+            {t('heading')}{" "}
             <span className="bg-[linear-gradient(transparent_58%,rgba(6,182,212,0.30)_58%)] px-1">
-              andalkan
+              {t('highlight')}
             </span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-            Bukan sekadar daftar — tiap teknologi di bawah punya bobot kemahiran
-            yang saya ukur jujur dari proyek nyata. Dari fondasi PHP & MySQL
-            sampai lapisan modern Next.js.
+            {t('description')}
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -242,11 +243,11 @@ export default function Skills() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
               </span>
-              Sedang dipelajari: {LEARNING.join(" & ")}
+              {t('learning')}: {LEARNING.join(" & ")}
             </span>
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-gray-400">
               <Layers className="h-3.5 w-3.5 text-secondary" />
-              {TOTAL} teknologi · {GROUPS.length} kategori
+              {t('techCount', { total: TOTAL, categories: GROUPS.length })}
             </span>
           </div>
         </motion.div>
@@ -273,7 +274,7 @@ export default function Skills() {
                       {group.title}
                     </h3>
                     <p className="font-mono text-xs text-gray-400">
-                      {group.items.length} stack
+                      {t('stackCount', { count: group.items.length })}
                     </p>
                   </div>
                 </div>
@@ -330,7 +331,7 @@ export default function Skills() {
           className="mt-14 flex items-center gap-2 font-mono text-xs text-gray-400"
         >
           <Sparkles className="h-3.5 w-3.5 text-secondary" />
-          Kemahiran diukur dari kontribusi proyek nyata, bukan klaim.
+          {t('note')}
         </motion.p>
       </div>
     </section>
